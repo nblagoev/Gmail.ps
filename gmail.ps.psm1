@@ -27,10 +27,10 @@ function Remove-GmailSession {
 function Get-Label {
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [AE.Net.Mail.ImapClient]$Session,
         
-        [Parameter(Position = 1, Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Position = 0, Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
         [string]$Like = "",
         
         [Parameter()]
