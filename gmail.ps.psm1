@@ -31,6 +31,7 @@ function Get-Label {
         [AE.Net.Mail.ImapClient]$Session,
         
         [Parameter(Position = 0, Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
+        [Alias("Name")]
         [string]$Like = "",
         
         [Parameter()]
