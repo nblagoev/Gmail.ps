@@ -49,14 +49,15 @@ function New-Label {
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true)]
-        [string]$Name,
+        [string[]]$Name,
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [AE.Net.Mail.ImapClient]$Session
     )
 
-    process {
-        $Session.CreateMailbox($Name)
+    foreach ($item in $Name)
+    {
+        $Session.CreateMailbox($item)
     }
 }
 
@@ -64,14 +65,15 @@ function Remove-Label {
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true)]
-        [string]$Name,
+        [string[]]$Name,
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [AE.Net.Mail.ImapClient]$Session
     )
 
-    process {
-        $Session.DeleteMailbox($Name)
+    foreach ($item in $Name)
+    {
+        $Session.DeleteMailbox($item)
     }
 }
 
