@@ -10,7 +10,7 @@ __This library is still under development.__
 
 You can install it easily using chocolatey:
 
-    cinst posh-gmail
+    cinst gmail.ps
     
 Or install it manually:
 
@@ -22,7 +22,9 @@ Or install it manually:
 
 * Read emails
 * Search emails
+* (Update) emails: label, archive, delete, mark as read/unread/spam, star
 * Manage labels
+* Move between labels/mailboxes
 
 ## Usage:
 
@@ -175,9 +177,7 @@ $gmail | Get-Label -Name "SomeLabel" # returns null if the label doesn't exist
 ```
 
 ## Roadmap
-* Emails: label, archive, delete, mark as read/unread/spam, star
 * Write tests
-* Move between labels/mailboxes
 * Prettify the output
 * Send mail via Google's SMTP servers
 

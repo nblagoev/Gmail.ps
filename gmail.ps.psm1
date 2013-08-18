@@ -46,7 +46,7 @@ function Get-Mailbox {
     )
 
     $mailbox = $Session.SelectMailbox($Label)
-    $mailbox | Add-Member -MemberType NoteProperty -Name Session -Value $Session -PassThru
+    AddSessionTo $mailbox $Session
 }
 
 function Filter-Message {
@@ -150,18 +150,114 @@ function Filter-Message {
         $ar += 'SUBJECT "' + $Subject + '"'
     }
 
+    if ($Last) {
+        Write-Warning "The -Last parameter is not yet implemented; will be ignored"
+    }
+
     $criteria = '(' + ($ar -join ') (') + ')'
     $result = $Session.Search($criteria);
 
     foreach ($item in $result)
     {
-        $Session.GetMessage($item, !$Prefetch, $false)
+        $msg = $Session.GetMessage($item, !$Prefetch, $false)
+        AddSessionTo $msg $Session
     }
 
 }
 
 function GetRFC2060Date([DateTime]$date) {
     $date.ToString("dd-MMM-yyyy hh:mm:ss zz", [CultureInfo]::GetCultureInfo("en-US"))
+}
+
+function AddSessionTo($item, [AE.Net.Mail.ImapClient]$session) {
+    $item | Add-Member -MemberType NoteProperty -Name Session -Value $session -PassThru
+}
+
+function Remove-Message {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [AE.Net.Mail.ImapClient]$Session,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [AE.Net.Mail.MailMessage]$Message
+    )
+    
+    process {
+        $Session.DeleteMessage($Message)
+    }
+}
+
+function Update-Message {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [AE.Net.Mail.ImapClient]$Session,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [AE.Net.Mail.MailMessage]$Message,
+
+        [Parameter()]
+        [switch]$Read,
+        [Parameter()]
+        [switch]$Unread,
+        [Parameter()]
+        [switch]$Archive,
+        [Parameter()]
+        [switch]$Star,
+        [Parameter()]
+        [switch]$Unstar,
+        [Parameter()]
+        [switch]$Spam,
+        [Parameter(ParameterSetName = "LabelSet")]
+        [string[]]$Label,
+        [Parameter(ParameterSetName = "LabelSet")]
+        [switch]$Force
+    )
+    
+    process {
+        if ($Unread -or $Unstar) {
+            Write-Warning "The -Unread and-Unstar parameters are not yet implemented; will be ignored"
+        }
+
+        if ($Archive) {
+            $Session.MoveMessage($Message.Uid, "[Gmail]/All Mail")
+        }
+
+        if ($Spam) {
+            $Session.MoveMessage($Message.Uid, "[Gmail]/Spam")
+        }
+
+        $flags = [AE.Net.Mail.Flags]::None
+
+        if ($Read) {
+            $flags -bor [AE.Net.Mail.Flags]::Seen
+        }
+
+        if ($Star) {
+            $flags -bor [AE.Net.Mail.Flags]::Flagged
+        }
+
+        if ($flags -ne [AE.Net.Mail.Flags]::None) {
+            $Session.AddFlags($flags, @($Message))
+        }
+    }
+}
+
+function Move-Message {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [AE.Net.Mail.ImapClient]$Session,
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [AE.Net.Mail.MailMessage]$Message,
+        [Parameter(Mandatory = $true)]
+        [string]$Mailbox
+    )
+    
+    Write-Warning "This cmdlet may lead to unexpected results"
+    $res = Read-Host -Prompt "Type 'y' to continue"
+    if ($res -eq "y") {
+        $Session.MoveMessage($Message.Uid, $Mailbox)
+    }
 }
 
 function Count-Message {
@@ -227,4 +323,6 @@ function Remove-Label {
     }
 }
 
-Export-ModuleMember -Function * -Alias * -Cmdlet *
+Export-ModuleMember -Function New-GmailSession, Remove-GmailSession, Get-Inbox, Get-Mailbox, 
+                                Filter-Message, Count-Message, Remove-Message, Update-Message, 
+                                Get-Label, New-Label, Remove-Label
