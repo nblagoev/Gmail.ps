@@ -20,6 +20,8 @@ Or install it manually:
 
 ## Features
 
+* Read emails
+* Search emails
 * Manage labels
 
 ## Usage:
@@ -173,11 +175,10 @@ $gmail | Get-Label -Name "SomeLabel" # returns null if the label doesn't exist
 ```
 
 ## Roadmap
-* Search emails
-* Read emails 
 * Emails: label, archive, delete, mark as read/unread/spam, star
 * Write tests
 * Move between labels/mailboxes
+* Prettify the output
 * Send mail via Google's SMTP servers
 
 ## Contributing
