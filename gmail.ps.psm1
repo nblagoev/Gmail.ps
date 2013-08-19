@@ -8,8 +8,8 @@ function New-GmailSession {
 
     $ghost = "imap.gmail.com"
     $gport = 993
-    $guser = "test.dummy.nb@gmail.com" # $Credential.UserName
-    $gpass = "dummyaccount" #TODO: Parse it from the $Credential
+    $guser = $Credential.UserName
+    $gpass = $Credential.GetNetworkCredential().Password
 
     New-Object -TypeName AE.Net.Mail.ImapClient -ArgumentList $ghost,$guser,$gpass,Login,$gport,$true,$false
 }
