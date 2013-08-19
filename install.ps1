@@ -10,7 +10,7 @@ if (-not $Destination) {
 
 if (-not (Test-Path $Destination)) {
     New-Item $Destination -ItemType Directory -Force | Out-Null
-} elseif (Test-Path (Join-Path $Destination "Gmail.ps")) {
+} elseif (Test-Path (Join-Path $Destination "Gmail.ps\Gmail.ps.psm1")) {
     Write-Host "Gmail.ps is already installed" -Foreground Green
     return
 }
@@ -25,10 +25,12 @@ try {
 $CurrentLocation = Get-Location
 Push-Location $Destination
 
-if ($hasGit) {
+if (Test-Path (Join-Path $CurrentLocation "Gmail.ps.psm1")) {
+    Copy-Item -Path $CurrentLocation -Destination ($Destination + "\Gmail.ps\") -Recurse
+} elseif ($hasGit) {
     git clone https://github.com/nikoblag/Gmail.ps.git
 } else {
-    New-Item ($Destination + "\.ps\") -ItemType Directory -Force | Out-Null
+    New-Item ($Destination + "\Gmail.ps\") -ItemType Directory -Force | Out-Null
     Write-Host "Downloading Gmail.ps from https://github.com/nikoblag/Gmail.ps"
     $rawMasterURL = "https://github.com/nikoblag/Gmail.ps/raw/master/"
     $files = @("Gmail.ps.psm1","Gmail.ps.psd1","AE.Net.Mail.dll","LICENSE","README.md")
