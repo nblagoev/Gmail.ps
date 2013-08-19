@@ -187,7 +187,7 @@ $gmail | Get-Label -Name "SomeLabel" # returns null if the label doesn't exist
 2. Create a branch (`git checkout -b my_feature`)
 3. Commit your changes (`git commit -am "Added Feature"`)
 4. Push to the branch (`git push origin my_feature`)
-5. Open a [Pull Request][1]
+5. Open a [Pull Request](https://github.com/nikoblag/Gmail.ps/compare/)
 6. Enjoy an ice cream and wait
 
 ## Author
