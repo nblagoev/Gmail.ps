@@ -10,12 +10,12 @@ __This library is still under development.__
 
 You can install it easily using chocolatey:
 
-    cinst gmail.ps
-    
+    cinst Gmail.ps
+
 Or install it manually:
 
-    git clone https://github.com/nikoblag/gmail.ps.git
-    cd gmail.ps
+    git clone https://github.com/nikoblag/Gmail.ps.git
+    cd Gmail.ps
     .\install.ps1
 
 ## Features
@@ -28,7 +28,7 @@ Or install it manually:
 
 ## Usage:
 
-### Authenticating gmail sessions
+### Authenticating Gmail sessions
 
 This will you automatically log in to your account. 
 
