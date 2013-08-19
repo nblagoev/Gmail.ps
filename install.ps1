@@ -10,7 +10,7 @@ if (-not $Destination) {
 
 if (-not (Test-Path $Destination)) {
     New-Item $Destination -ItemType Directory -Force | Out-Null
-} elseif (Test-Path (Join-Path $Destination "Gmail.ps")) {
+} elseif (Test-Path (Join-Path $Destination "Gmail.ps\Gmail.ps.psm1")) {
     Write-Host "Gmail.ps is already installed" -Foreground Green
     return
 }
