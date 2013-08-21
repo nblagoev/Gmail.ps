@@ -323,6 +323,9 @@ function Remove-Label {
     }
 }
 
-Export-ModuleMember -Function New-GmailSession, Remove-GmailSession, Get-Inbox, Get-Mailbox, 
-                                Filter-Message, Count-Message, Remove-Message, Update-Message, 
-                                Get-Label, New-Label, Remove-Label
+New-Alias -Name Select-Mailbox -Value Get-Mailbox
+New-Alias -Name Select-Inbox -Value Get-Inbox
+
+Export-ModuleMember -Alias * -Function New-GmailSession, Remove-GmailSession, Get-Inbox, Get-Mailbox, 
+                                        Filter-Message, Count-Message, Remove-Message, Update-Message, 
+                                        Get-Label, New-Label, Remove-Label 
