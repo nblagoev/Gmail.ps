@@ -49,7 +49,7 @@ function Get-Mailbox {
     AddSessionTo $mailbox $Session
 }
 
-function Filter-Message {
+function Get-Message {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -396,8 +396,10 @@ function Set-Label {
 }
 
 New-Alias -Name Select-Mailbox -Value Get-Mailbox
+New-Alias -Name Filter-Message -Value Get-Message
+New-Alias -Name Count-Message -Value Measure-Message
 New-Alias -Name Add-Label -Value Set-Label
 
-Export-ModuleMember -Alias * -Function New-GmailSession, Remove-GmailSession, Get-Inbox, Get-Mailbox, 
-                                        Filter-Message, Count-Message, Remove-Message, Update-Message, 
+Export-ModuleMember -Alias * -Function New-GmailSession, Remove-GmailSession, Get-Mailbox, 
+                                        Get-Message, Measure-Message, Remove-Message, Update-Message, 
                                         Get-Label, New-Label, Remove-Label, Set-Label, Move-Message 

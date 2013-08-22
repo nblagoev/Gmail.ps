@@ -118,7 +118,7 @@ PS> $gmail | Get-Mailbox | Filter-Message -From "x@gmail.com" | ForEach-Object {
 Save all attachments in the "Important" label to a local folder:
 
 ```powershell
-PS> $messages = $gmail | Get-Mailbox -Label "Important"
+PS> $messages = $gmail | Get-Mailbox -Label "Important" | Get-Message
 PS> foreach ($msg in $messages) {
 PS>     if ($msg.HasAttachments) {
 PS>         $msg.FetchAttachments($folder)
