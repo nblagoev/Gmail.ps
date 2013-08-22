@@ -74,8 +74,7 @@ function Filter-Message {
         [string]$Body,
         [string]$Subject,
         [string]$Label,
-        [string]$Query,
-        [int]$Last
+        [string]$Query
     )
 
     $ar = @()
@@ -148,10 +147,6 @@ function Filter-Message {
 
     if ($Subject) {
         $ar += 'SUBJECT "' + $Subject + '"'
-    }
-
-    if ($Last) {
-        Write-Warning "The -Last parameter is not yet implemented; will be ignored"
     }
 
     $criteria = '(' + ($ar -join ') (') + ')'

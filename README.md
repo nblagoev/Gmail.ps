@@ -93,7 +93,7 @@ PS> $gmail | Count-Message
 Also you can manipulate each message using block style. Remember that every message in a conversation/thread will come as a separate message.
 
 ```powershell
-PS> $messages = $gmail | Get-Inbox | Filter-Message -Unread -Last 10
+PS> $messages = $gmail | Get-Inbox | Filter-Message -Unread | Select-Object -Last 10
 PS> foreach ($msg in $messages) {
 PS>     $msg | Update-Message -Read # you can use -Unread, -Spam, -Star, -Unstar, -Archive too
 PS> }
@@ -121,7 +121,7 @@ PS> }
 Save just the first attachment from the newest unread email:
 
 ```powershell
-PS> $msg = $gmail | Get-Inbox | Filter-Message -Unread -Last 1
+PS> $msg = $gmail | Get-Inbox | Filter-Message -Unread | Select-Object -Last 1
 PS> $msg.Fetch()
 PS> $msg.Attachments[0].SaveTo($location)
 ```
