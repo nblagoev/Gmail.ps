@@ -195,29 +195,40 @@ function Update-Message {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AE.Net.Mail.MailMessage]$Message,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = "Seen")]
         [switch]$Read,
-        [Parameter()]
+
+        [Parameter(ParameterSetName = "Unseen")]
         [switch]$Unread,
-        [Parameter()]
+
+        [Parameter(ParameterSetName = "Unseen")]
+        [Parameter(ParameterSetName = "Seen")]
+        [Parameter(ParameterSetName = "Flagged")]
+        [Parameter(ParameterSetName = "Unflagged")]
+        [Parameter(ParameterSetName = "LabelSet")]
         [switch]$Archive,
-        [Parameter()]
+
+        [Parameter(ParameterSetName = "Flagged")]
         [switch]$Star,
-        [Parameter()]
+
+        [Parameter(ParameterSetName = "Unflagged")]
         [switch]$Unstar,
-        [Parameter()]
+        
+        [Parameter(ParameterSetName = "Unseen")]
+        [Parameter(ParameterSetName = "Seen")]
+        [Parameter(ParameterSetName = "Flagged")]
+        [Parameter(ParameterSetName = "Unflagged")]
+        [Parameter(ParameterSetName = "LabelSet")]
         [switch]$Spam,
+
         [Parameter(ParameterSetName = "LabelSet")]
         [string[]]$Label,
+
         [Parameter(ParameterSetName = "LabelSet")]
         [switch]$Force
     )
     
     process {
-        if ($Unread -or $Unstar) {
-            Write-Warning "The -Unread and-Unstar parameters are not yet implemented; will be ignored"
-        }
-
         if ($Archive) {
             $Session.MoveMessage($Message.Uid, "[Gmail]/All Mail")
         }
@@ -226,19 +237,36 @@ function Update-Message {
             $Session.MoveMessage($Message.Uid, "[Gmail]/Spam")
         }
 
-        $flags = [AE.Net.Mail.Flags]::None
+        $replace = $false
+        $changed = $false
 
         if ($Read) {
             $flags = $flags -bor [AE.Net.Mail.Flags]::Seen
-        }
+            $changed = $true
+        } elseif ($Unread) {
+            $flags = $Message.Flags
+            $flags = $flags -bxor [AE.Net.Mail.Flags]::Seen
+            $changed = $true
+            $replace = $true
+        } 
 
         if ($Star) {
             $flags = $flags -bor [AE.Net.Mail.Flags]::Flagged
+            $changed = $true
+        } elseif ($Unstar) {
+            $flags = $Message.Flags
+            $flags = $flags -bxor [AE.Net.Mail.Flags]::Flagged
+            $changed = $true
+            $replace = $true
         }
 
-        if ($flags -ne [AE.Net.Mail.Flags]::None) {
-            $Session.AddFlags([AE.Net.Mail.Flags]$flags, @($Message))
-        }
+        if ($changed) {
+            if (-not $replace) {
+                $Session.AddFlags([AE.Net.Mail.Flags]$flags, @($Message))
+            } else {
+                $Session.SetFlags([AE.Net.Mail.Flags]$flags, @($Message))
+            }
+        } 
     }
 }
 
