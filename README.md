@@ -134,22 +134,29 @@ PS> $msg.Fetch()
 PS> $msg.Attachments[0].SaveTo($location)
 ```
 
-Add a label to a message:
+Get all labels applied to a message:
 
 ```powershell
-$msg | Update-Message -Label "Important"
+$msg | Get-Label
 ```
 
-Example above will raise error when you don't have the `Important` label. You can avoid this using:
+Add a label to a message (or remove it):
 
 ```powershell
-$msg | Update-Message -Label "Important" -Force # The `Important` label will be automatically created now
+$msg | Set-Label "Important"
+$msg | Remove-Label "Important"
 ```
 
 You can apply multiple lables:
 
 ```powershell
-$msg | Update-Message -Label "Important","Banking"
+$msg | Set-Label "Important","Banking"
+```
+
+The example above will raise error when you don't have one of the specified labels. You can avoid this using:
+
+```powershell
+$msg | Set-Label "Important","Banking" -Force # If one of the labels does't exist, it will be automatically created now
 ```
 
 You can also move message to a label/mailbox:
