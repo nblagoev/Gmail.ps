@@ -66,6 +66,7 @@ Get the messages marked as Important by Gmail:
 
 ```powershell
 PS> $gmail | Get-Mailbox "Important"
+```
 
 With `Get-Mailbox` you can access the "All Mail", "Starred", "Drafts", "Important", "Sent Mail", "Spam" Gmail folders
 
