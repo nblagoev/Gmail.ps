@@ -202,7 +202,6 @@ function Update-Message {
         [Parameter(ParameterSetName = "Seen")]
         [Parameter(ParameterSetName = "Flagged")]
         [Parameter(ParameterSetName = "Unflagged")]
-        [Parameter(ParameterSetName = "LabelSet")]
         [switch]$Archive,
 
         [Parameter(ParameterSetName = "Flagged")]
@@ -215,14 +214,7 @@ function Update-Message {
         [Parameter(ParameterSetName = "Seen")]
         [Parameter(ParameterSetName = "Flagged")]
         [Parameter(ParameterSetName = "Unflagged")]
-        [Parameter(ParameterSetName = "LabelSet")]
-        [switch]$Spam,
-
-        [Parameter(ParameterSetName = "LabelSet")]
-        [string[]]$Label,
-
-        [Parameter(ParameterSetName = "LabelSet")]
-        [switch]$Force
+        [switch]$Spam
     )
     
     process {
@@ -263,7 +255,7 @@ function Update-Message {
             } else {
                 $Session.SetFlags([AE.Net.Mail.Flags]$flags, @($Message))
             }
-        } 
+        }
     }
 }
 
@@ -306,6 +298,9 @@ function Get-Label {
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [AE.Net.Mail.ImapClient]$Session,
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $true)]
+        [AE.Net.Mail.MailMessage]$Message,
         
         [Parameter(Position = 0, Mandatory = $false, ValueFromPipelineByPropertyName = $true)]
         [Alias("Name")]
@@ -315,10 +310,14 @@ function Get-Label {
         [switch]$All
     )
 
-    if ($All) {
-        $Session.ListMailboxes($Like, "*")
+    if ($Message) {
+        $Message.Labels
     } else {
-        $Session.ListMailboxes($Like, "*") | Where-Object { $_.Name -notmatch "\[Gmail\]" -and $_.Name -ne "INBOX" }
+        if ($All) {
+            $Session.ListMailboxes($Like, "*")
+        } else {
+            $Session.ListMailboxes($Like, "*") | Where-Object { $_.Name -notmatch "\[Gmail\]" -and $_.Name -ne "INBOX" }
+        }
     }
 }
 
@@ -345,18 +344,62 @@ function Remove-Label {
         [string[]]$Name,
 
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [AE.Net.Mail.ImapClient]$Session
+        [AE.Net.Mail.ImapClient]$Session, 
+
+        [Parameter(Mandatory = $false, ValueFromPipeline = $true)]
+        [AE.Net.Mail.MailMessage]$Message
     )
 
     foreach ($item in $Name)
     {
-        $Session.DeleteMailbox($item)
+        if ($Message) {
+            $Session.RemoveLabels($Name, @($Message))
+        } else {
+            $Session.DeleteMailbox($item)
+        }
+    }
+}
+
+function Set-Label {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [AE.Net.Mail.ImapClient]$Session,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [AE.Net.Mail.MailMessage]$Message,
+        
+        [Parameter(Mandatory = $true)]
+        [string[]]$Name,
+
+        [Parameter()]
+        [switch]$Force
+    )
+
+    process {
+        $labels = $Session | Get-Label
+        
+        foreach ($label in $Name)
+        {
+            if (!$labels.Contains($label)) {
+                if ($Force) {
+                    $Session | New-Label $label | Out-Null
+                } else {
+                    Write-Error "The label '$label' doesn't exist! Use the -Force parameter to create and apply it"
+                    $er = $true
+                }
+            }
+        }
+
+        if (!$er) {
+            $Session.AddLabels($Name, @($Message))
+        }
     }
 }
 
 New-Alias -Name Select-Mailbox -Value Get-Mailbox
-New-Alias -Name Select-Inbox -Value Get-Inbox
+New-Alias -Name Add-Label -Value Set-Label
 
 Export-ModuleMember -Alias * -Function New-GmailSession, Remove-GmailSession, Get-Inbox, Get-Mailbox, 
                                         Filter-Message, Count-Message, Remove-Message, Update-Message, 
-                                        Get-Label, New-Label, Remove-Label, Move-Message 
+                                        Get-Label, New-Label, Remove-Label, Set-Label, Move-Message 
