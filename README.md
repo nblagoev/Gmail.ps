@@ -68,7 +68,7 @@ Get the messages marked as Important by Gmail:
 PS> $gmail | Get-Mailbox "Important"
 ```
 
-With `Get-Mailbox` you can access the "All Mail", "Starred", "Drafts", "Important", "Sent Mail", "Spam" Gmail folders
+With `Get-Mailbox` you can access the `"All Mail"`, `"Starred`", `"Drafts"`, `"Important"`, `"Sent Mail"` and `"Spam"` folders
 
 Filter with some criteria:
 
@@ -156,6 +156,7 @@ You can also move message to a label/mailbox:
 
 ```powershell
 $msg | Move-Message -Label "Test"
+$msg | Move-Message "All Mail"
 ```
 
 ### Managing labels

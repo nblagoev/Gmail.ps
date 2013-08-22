@@ -272,15 +272,21 @@ function Move-Message {
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [AE.Net.Mail.ImapClient]$Session,
+
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AE.Net.Mail.MailMessage]$Message,
-        [Parameter(Mandatory = $true)]
-        [string]$Mailbox
+
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName = $true, ParameterSetName = "A")]
+        [ValidateSet("Inbox", "All Mail", "Starred", "Drafts", "Important", "Sent Mail", "Spam")]
+        [string]$Mailbox,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = "B")]
+        [string]$Label
     )
-    
-    Write-Warning "This cmdlet may lead to unexpected results"
-    $res = Read-Host -Prompt "Type 'y' to continue"
-    if ($res -eq "y") {
+
+    if ($Label) {
+        $Session.MoveMessage($Message.Uid, $Label)
+    } elseif ($Mailbox ) {
         $Session.MoveMessage($Message.Uid, $Mailbox)
     }
 }
