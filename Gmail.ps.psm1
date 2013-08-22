@@ -229,15 +229,15 @@ function Update-Message {
         $flags = [AE.Net.Mail.Flags]::None
 
         if ($Read) {
-            $flags -bor [AE.Net.Mail.Flags]::Seen
+            $flags = $flags -bor [AE.Net.Mail.Flags]::Seen
         }
 
         if ($Star) {
-            $flags -bor [AE.Net.Mail.Flags]::Flagged
+            $flags = $flags -bor [AE.Net.Mail.Flags]::Flagged
         }
 
         if ($flags -ne [AE.Net.Mail.Flags]::None) {
-            $Session.AddFlags($flags, @($Message))
+            $Session.AddFlags([AE.Net.Mail.Flags]$flags, @($Message))
         }
     }
 }
