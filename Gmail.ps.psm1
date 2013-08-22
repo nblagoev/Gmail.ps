@@ -151,11 +151,13 @@ function Get-Message {
 
     $criteria = '(' + ($ar -join ') (') + ')'
     $result = $Session.Search($criteria);
-
+    $i = 1
     foreach ($item in $result)
     {
         $msg = $Session.GetMessage($item, !$Prefetch, $false)
         AddSessionTo $msg $Session
+        Write-Progress -Activity "Gathering messages" -Status "Progress: $($i)/$($result.Count)" -PercentComplete ($i / $result.Count * 100) -Id 90017
+        $i += 1
     }
 
 }
@@ -281,7 +283,7 @@ function Move-Message {
     }
 }
 
-function Count-Message {
+function Measure-Message {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
