@@ -27,24 +27,22 @@ function Remove-GmailSession {
 function Get-Mailbox {
     [CmdletBinding()]
     param(
-        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [AE.Net.Mail.ImapClient]$Session,
 
-        [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true, ParameterSetName = "A")]
-        [ValidateSet("All Mail", "Starred", "Drafts", "Important", "Sent Mail", "Spam")]
-        [AllowEmptyString()]
-        [AllowNull()]
-        [string]$Name,
+        [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true)]
+        [ValidateSet("All Mail", "Starred", "Drafts", "Important", "Sent Mail", "Spam", "Inbox")]
+        [string]$Name = "Inbox",
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = "B")]
+        [Parameter(ValueFromPipelineByPropertyName = $true)]
         [string]$Label
     )
 
     if ($Label) {
         $mailbox = $Session.SelectMailbox($Label)
-    } elseif ($Name -and ($Name -ne "")) {
+    } elseif ($Name -and ($Name -ne "Inbox")) {
         $mailbox = $Session.SelectMailbox("[Gmail]/" + $Name)
-    } else {
+    } elseif ($Name -and ($Name -eq "Inbox")) {
         $mailbox = $Session.SelectMailbox("Inbox")
     }
 
