@@ -310,13 +310,15 @@ function Get-Label {
         [switch]$All
     )
 
-    if ($Message) {
-        $Message.Labels
-    } else {
-        if ($All) {
-            $Session.ListMailboxes($Like, "*")
+    process {
+        if ($Message) {
+            $Message.Labels
         } else {
-            $Session.ListMailboxes($Like, "*") | Where-Object { $_.Name -notmatch "\[Gmail\]" -and $_.Name -ne "INBOX" }
+            if ($All) {
+                $Session.ListMailboxes($Like, "*")
+            } else {
+                $Session.ListMailboxes($Like, "*") | Where-Object { $_.Name -notmatch "\[Gmail\]" -and $_.Name -ne "INBOX" }
+            }
         }
     }
 }

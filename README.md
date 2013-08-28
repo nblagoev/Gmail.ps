@@ -103,8 +103,8 @@ Also you can manipulate each message using block style. Remember that every mess
 ```powershell
 PS> $messages = $gmail | Get-Mailbox | Filter-Message -Unread | Select-Object -Last 10
 PS> foreach ($msg in $messages) {
-PS>     $msg | Update-Message -Read # you can use -Unread, -Spam, -Star, -Unstar, -Archive too
-PS> }
+>>     $msg | Update-Message -Read # you can use -Unread, -Spam, -Star, -Unstar, -Archive too
+>> }
 ```
     
 ### Working with emails!
@@ -120,10 +120,10 @@ Save all attachments in the "Important" label to a local folder:
 ```powershell
 PS> $messages = $gmail | Get-Mailbox -Label "Important" | Get-Message
 PS> foreach ($msg in $messages) {
-PS>     if ($msg.HasAttachments) {
-PS>         $msg.FetchAttachments($folder)
-PS>     }
-PS> }
+>>     if ($msg.HasAttachments) {
+>>         $msg.FetchAttachments($folder)
+>>     }
+>> }
 ```
 
 Save just the first attachment from the newest unread email:
