@@ -60,7 +60,7 @@ RequiredAssemblies = 'AE.Net.Mail.dll'
 #TypesToProcess     = @()
 
 # Format files (.ps1xml) to be loaded when importing this module
-#FormatsToProcess   = @()
+FormatsToProcess   = @('FormatData\MailMessage.Format.ps1xml')
 
 # Modules to import as nested modules of the module specified in ModuleToProcess
 #NestedModules      = ''  

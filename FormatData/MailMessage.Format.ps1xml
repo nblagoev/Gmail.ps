@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+  <ViewDefinitions>
+    <View>
+      <Name>mailmessage</Name>
+      <ViewSelectedBy>
+        <TypeName>AE.Net.Mail.MailMessage</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+            <TableColumnHeader>
+                <Width>50</Width>
+                <Label>Subject</Label>
+            </TableColumnHeader>
+            <TableColumnHeader>
+                <Width>30</Width>
+                <Label>From</Label>
+            </TableColumnHeader>
+            <TableColumnHeader>
+                <Width>25</Width>
+                <Label>Date</Label>
+            </TableColumnHeader>
+            <TableColumnHeader>
+                <Label>Labels</Label>
+            </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+            <TableRowEntry>
+                <Wrap/>
+                <TableColumnItems>
+                    <TableColumnItem>
+                        <PropertyName>Subject</PropertyName>
+                    </TableColumnItem>
+                    <TableColumnItem>
+                        <ScriptBlock>
+                            $_.From.DisplayName
+                        </ScriptBlock>
+                    </TableColumnItem>
+                    <TableColumnItem>
+                        <PropertyName>Date</PropertyName>
+                    </TableColumnItem>
+                    <TableColumnItem>
+                        <ScriptBlock>
+                            ($_.Labels | Format-List | Out-String).Trim()
+                        </ScriptBlock>
+                    </TableColumnItem>
+                </TableColumnItems>
+            </TableRowEntry>
+        </TableRowEntries>
+        </TableControl>
+    </View>
+
+  </ViewDefinitions>
+</Configuration>
