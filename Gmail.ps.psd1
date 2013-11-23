@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest
-RootModule         = 'gmail.ps.psm1'
+RootModule         = 'Gmail.ps.psm1'
 
 # Version number of this module.
 ModuleVersion = '1.0.0.0'
@@ -60,7 +60,7 @@ RequiredAssemblies = 'AE.Net.Mail.dll'
 #TypesToProcess     = @()
 
 # Format files (.ps1xml) to be loaded when importing this module
-FormatsToProcess   = @('FormatData\MailMessage.Format.ps1xml')
+FormatsToProcess   = @('FormatData\MailMessage.Format.ps1xml', 'FormatData\Mailbox.Format.ps1xml')
 
 # Modules to import as nested modules of the module specified in ModuleToProcess
 #NestedModules      = ''  

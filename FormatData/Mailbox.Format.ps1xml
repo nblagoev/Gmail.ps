@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+  <ViewDefinitions>
+    <View>
+      <Name>mailmessage</Name>
+      <ViewSelectedBy>
+        <TypeName>AE.Net.Mail.Imap.Mailbox</TypeName>
+      </ViewSelectedBy>
+      <WideControl>
+        <WideEntries>
+            <WideEntry>
+                <WideItem>
+                     <PropertyName>Name</PropertyName>
+                </WideItem>
+            </WideEntry>
+        </WideEntries>
+      </WideControl>
+    </View>
+
+  </ViewDefinitions>
+</Configuration>
