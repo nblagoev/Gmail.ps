@@ -24,6 +24,21 @@ function Remove-GmailSession {
     $Session.Disconnect()
 }
 
+function Invoke-GmailSession {
+    [CmdletBinding()]
+    param (
+        [Parameter(Position = 1, Mandatory = $true)]
+        [ScriptBlock]$ScriptBlock,
+
+        [Parameter(Position = 0, Mandatory = $false)]
+        [System.Management.Automation.PSCredential]$Credential = $($cr = (Get-StoredCredential Gmail.ps:default); if ($cr -eq $null) {Get-Credential} else {$cr})
+    )
+
+    $gmail = New-GmailSession -Credential $Credential
+    & $ScriptBlock $gmail
+    $gmail | Remove-GmailSession
+}
+
 function Get-Mailbox {
     [CmdletBinding()]
     param(
@@ -562,6 +577,6 @@ New-Alias -Name Filter-Message -Value Get-Message
 New-Alias -Name Count-Message -Value Measure-Message
 New-Alias -Name Add-Label -Value Set-Label
 
-Export-ModuleMember -Alias * -Function New-GmailSession, Remove-GmailSession, Get-Mailbox, 
+Export-ModuleMember -Alias * -Function New-GmailSession, Remove-GmailSession, Invoke-GmailSession, Get-Mailbox, 
                                         Get-Message, Measure-Message, Remove-Message, Update-Message, 
                                         Get-Label, New-Label, Remove-Label, Set-Label, Move-Message 

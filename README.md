@@ -42,12 +42,13 @@ PS> # play with your gmail...
 PS> $gmail | Remove-GmailSession
 ```
 
-If you use `Enter-GmailSession` and pass a block, the session will be passed into the block, 
-and will be logged out after the block is executed.
+If you use `Invoke-GmailSession` and pass a block, the session will be passed into the block, 
+and will be logged out after it's executed. Use `$args` to access the session or parameterize the block: 
 
 ```powershell
-PS> Enter-GmailSession -Credential (Get-Credential) -Script {
-PS>     # play with your gmail...
+PS> Invoke-GmailSession -ScriptBlock {
+PS>     param($gmail) # to use $gmail instead of $args
+PS>     $gmail | Get-Label
 PS> }
 ```
 
