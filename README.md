@@ -25,12 +25,16 @@ Or install it manually:
 * (Update) emails: label, archive, delete, mark as read/unread/spam, star
 * Manage labels
 * Move between labels/mailboxes
+* Automatic authentication, using the Windows Credential Manager
 
 ## Usage:
 
 ### Authenticating Gmail sessions
 
-This will you automatically log in to your account. 
+To authenticate a Gmail session, use `New-GmailSession` and provide your username and password. 
+If you want to be automatically logged in to your account, create a generic credential using the Windows Credential Manager: 
+go to 'Control Panel\User Accounts and Family Safety\Credential Manager', click 'Add a generic credential', then type your
+Gmail username and password, and use `Gmail.ps:default` as address. 
 
 ```powershell
 PS> $gmail = New-GmailSession
@@ -213,5 +217,7 @@ $gmail | Get-Label -Name "SomeLabel" # returns null if the label doesn't exist
 ## Copyright
 
 * Copyright (c) 2013 Nikolay Blagoev
+* Copyright (c) 2013 Andy Edinborough - AE.Net.Mail library
+* Copyright (c) 2012 Tobias Burger - Get-StoredCredential cmdlet
 
 See LICENSE for details.
