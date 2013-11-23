@@ -52,11 +52,7 @@ PS>     $gmail | Get-Label
 PS> }
 ```
 
-You can also check which accounts are logged in at any time:
-
-```powershell
-PS> Get-GmailSession
-```
+You can also check which accounts are logged in at any time using `Get-GmailSession` or close all of them with `Clear-GmailSession`.
 
 ### Gathering emails
     

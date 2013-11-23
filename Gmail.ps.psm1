@@ -1,4 +1,6 @@
 
+$GmailSessions = @();
+
 function New-GmailSession {
     [CmdletBinding()]
     param (
@@ -37,6 +39,15 @@ function Invoke-GmailSession {
     $gmail = New-GmailSession -Credential $Credential
     & $ScriptBlock $gmail
     $gmail | Remove-GmailSession
+}
+
+function Get-GmailSession {
+    $GmailSessions
+}
+
+function Clear-GmailSession {
+    $GmailSessions | ForEach-Object -Process { $_ | Remove-GmailSession }
+    $GmailSessions = @();
 }
 
 function Get-Mailbox {
@@ -577,6 +588,7 @@ New-Alias -Name Filter-Message -Value Get-Message
 New-Alias -Name Count-Message -Value Measure-Message
 New-Alias -Name Add-Label -Value Set-Label
 
-Export-ModuleMember -Alias * -Function New-GmailSession, Remove-GmailSession, Invoke-GmailSession, Get-Mailbox, 
+Export-ModuleMember -Alias * -Function New-GmailSession, Remove-GmailSession, Invoke-GmailSession, 
+                                        Get-GmailSession, Clear-GmailSession, Get-Mailbox, 
                                         Get-Message, Measure-Message, Remove-Message, Update-Message, 
                                         Get-Label, New-Label, Remove-Label, Set-Label, Move-Message 
