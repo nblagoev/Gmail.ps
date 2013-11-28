@@ -58,11 +58,11 @@ function Get-Mailbox {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [AE.Net.Mail.ImapClient]$Session,
 
-        [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true, ParameterSetName = "DefaultFolder")]
         [ValidateSet("All Mail", "Starred", "Drafts", "Important", "Sent Mail", "Spam", "Inbox")]
         [string]$Name = "Inbox",
 
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = "LabelFolder")]
         [string]$Label
     )
 
