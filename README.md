@@ -59,8 +59,8 @@ You can also check which accounts are logged in at any time using `Get-GmailSess
 Get the messages in the inbox:
 
 ```powershell
-PS> $gmail | Get-Mailbox
-PS> $gmail | Get-Mailbox | Filter-Message -Unread
+PS> $inbox = $gmail | Get-Mailbox
+PS> $inbox | Filter-Message -Unread
 ```
 
 Get the messages marked as Important by Gmail:
@@ -74,16 +74,16 @@ With `Get-Mailbox` you can access the `"All Mail"`, `"Starred`", `"Drafts"`, `"I
 Filter with some criteria:
 
 ```powershell
-PS> $gmail | Get-Mailbox | Filter-Message -After "2011-06-01" -Before "2012-01-01"
-PS> $gmail | Get-Mailbox | Filter-Message -On "2011-06-01"
-PS> $gmail | Get-Mailbox | Filter-Message -From "x@gmail.com"
-PS> $gmail | Get-Mailbox | Filter-Message -To "y@gmail.com"
+PS> $inbox | Filter-Message -After "2011-06-01" -Before "2012-01-01"
+PS> $inbox | Filter-Message -On "2011-06-01"
+PS> $inbox | Filter-Message -From "x@gmail.com"
+PS> $inbox | Filter-Message -To "y@gmail.com"
 ```
 
 Combine flags and options:
 
 ```powershell
-PS> $gmail | Get-Mailbox | Filter-Message -Unread -From "myboss@gmail.com"
+PS> $inbox | Filter-Message -Unread -From "myboss@gmail.com"
 ```
 
 Browsing labeled emails is similar to working with the inbox.
@@ -95,14 +95,14 @@ PS> $gmail | Get-Mailbox -Label "Important"
 You can count the messages too:
 
 ```powershell
-PS> $gmail | Get-Mailbox | Filter-Message -Unread | Count-Message
-PS> $gmail | Count-Message
+PS> $inbox | Count-Message
+PS> $inbox | Filter-Message -Unread | Count-Message
 ```
     
 Also you can manipulate each message using block style. Remember that every message in a conversation/thread will come as a separate message.
 
 ```powershell
-PS> $messages = $gmail | Get-Mailbox | Filter-Message -Unread | Select-Object -Last 10
+PS> $messages = $inbox | Filter-Message -Unread | Select-Object -Last 10
 PS> foreach ($msg in $messages) {
 >>     $msg | Update-Message -Read # you can use -Unread, -Spam, -Star, -Unstar, -Archive too
 >> }
@@ -113,7 +113,7 @@ PS> foreach ($msg in $messages) {
 Delete emails from X:
 
 ```powershell
-PS> $gmail | Get-Mailbox | Filter-Message -From "x@gmail.com" | ForEach-Object { Remove-Message $_ }
+PS> $inbox | Filter-Message -From "x@gmail.com" | ForEach-Object { Remove-Message $_ }
 ```
 
 Save all attachments in the "Important" label to a local folder:
@@ -130,7 +130,7 @@ PS> foreach ($msg in $messages) {
 Save just the first attachment from the newest unread email:
 
 ```powershell
-PS> $msg = $gmail | Get-Mailbox | Filter-Message -Unread | Select-Object -Last 1
+PS> $msg = $inbox | Filter-Message -Unread | Select-Object -Last 1
 PS> $msg.Fetch()
 PS> $msg.Attachments[0].SaveTo($location)
 ```
