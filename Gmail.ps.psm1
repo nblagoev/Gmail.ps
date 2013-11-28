@@ -145,7 +145,7 @@ function Clear-GmailSession {
 }
 
 function Get-Mailbox {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = "DefaultFolder")]
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [AE.Net.Mail.ImapClient]$Session,
