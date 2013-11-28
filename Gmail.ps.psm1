@@ -13,7 +13,9 @@ function New-GmailSession {
     $guser = $Credential.UserName
     $gpass = $Credential.GetNetworkCredential().Password
 
-    New-Object -TypeName AE.Net.Mail.ImapClient -ArgumentList $ghost,$guser,$gpass,Login,$gport,$true,$false
+    $session = New-Object -TypeName AE.Net.Mail.ImapClient -ArgumentList $ghost,$guser,$gpass,Login,$gport,$true,$false
+    $GmailSessions += $session
+    $session
 }
 
 function Remove-GmailSession {
