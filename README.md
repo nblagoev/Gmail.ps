@@ -8,9 +8,9 @@ __This library is still under development.__
 
 ## Installation
 
-You can install it easily using chocolatey:
+If you have [PsGet](http://psget.net/) installed you can simply execute:
 
-    cinst Gmail.ps
+    Install-Module Gmail.ps
 
 Or install it manually:
 

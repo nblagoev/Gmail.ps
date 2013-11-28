@@ -33,7 +33,7 @@ if (Test-Path (Join-Path $CurrentLocation "Gmail.ps.psm1")) {
     New-Item ($Destination + "\Gmail.ps\") -ItemType Directory -Force | Out-Null
     Write-Host "Downloading Gmail.ps from https://github.com/nikoblag/Gmail.ps"
     $rawMasterURL = "https://github.com/nikoblag/Gmail.ps/raw/master/"
-    $files = @("Gmail.ps.psm1","Gmail.ps.psd1","AE.Net.Mail.dll","LICENSE","README.md","FormatData\MailMessage.Format.ps1xml","FormatData\Mailbox.Format.ps1xml")
+    $files = @("Gmail.ps.psm1","Gmail.ps.psd1","AE.Net.Mail.dll","LICENSE","README.md","FormatData\MailMessage.Format.ps1xml","FormatData\Mailbox.Format.ps1xml","FormatData\Attachment.Format.ps1xml")
     $client = (New-Object Net.WebClient)
     $client.Proxy.Credentials = [System.Net.CredentialCache]::DefaultNetworkCredentials
 
