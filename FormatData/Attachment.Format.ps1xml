@@ -2,15 +2,15 @@
 <Configuration>
   <ViewDefinitions>
     <View>
-      <Name>Gmail.ps::mailbox</Name>
+      <Name>Gmail.ps::attachment</Name>
       <ViewSelectedBy>
-        <TypeName>AE.Net.Mail.Imap.Mailbox</TypeName>
+        <TypeName>AE.Net.Mail.Attachment</TypeName>
       </ViewSelectedBy>
       <WideControl>
         <WideEntries>
             <WideEntry>
                 <WideItem>
-                     <PropertyName>Name</PropertyName>
+                     <PropertyName>Filename</PropertyName>
                 </WideItem>
             </WideEntry>
         </WideEntries>

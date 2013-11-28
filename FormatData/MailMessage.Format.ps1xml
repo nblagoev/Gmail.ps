@@ -2,7 +2,7 @@
 <Configuration>
   <ViewDefinitions>
     <View>
-      <Name>mailmessage</Name>
+      <Name>Gmail.ps::message</Name>
       <ViewSelectedBy>
         <TypeName>AE.Net.Mail.MailMessage</TypeName>
       </ViewSelectedBy>
