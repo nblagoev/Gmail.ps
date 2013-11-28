@@ -285,6 +285,21 @@ function Update-Message {
     }
 }
 
+function Receive-Message {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [AE.Net.Mail.ImapClient]$Session,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [AE.Net.Mail.MailMessage]$Message
+    )
+
+    process {
+        $Session.GetMessage($Message.Uid, $false)
+    }
+}
+
 function Move-Message {
     [CmdletBinding()]
     param (
@@ -317,6 +332,29 @@ function Measure-Message {
     )
 
     $Session.GetMessageCount()
+}
+
+function Save-Attachment {
+    [CmdletBinding(DefaultParameterSetName = "Path")]
+    param (
+        [Parameter(Mandatory = $false, ValueFromPipeline = $true)]
+        [AE.Net.Mail.MailMessage]$Message,
+
+        [Parameter(Position = 0, ParameterSetName = "Path", Mandatory = $true)]
+        [string[]] $Path,
+
+        [Parameter(ParameterSetName = "LiteralPath", Mandatory = $true)]
+        [string[]] $LiteralPath
+    )
+
+    process {
+        foreach ($a in $Message.Attachments)
+        {
+            $p = Convert-Path ($Path + $LiteralPath)
+            $loc = Join-Path $p $Message.Uid
+            $a.Save((Join-Path $loc $a.Filename))
+        }
+    }
 }
 
 function Get-Label {
@@ -589,6 +627,7 @@ New-Alias -Name Count-Message -Value Measure-Message
 New-Alias -Name Add-Label -Value Set-Label
 
 Export-ModuleMember -Alias * -Function New-GmailSession, Remove-GmailSession, Invoke-GmailSession, 
-                                        Get-GmailSession, Clear-GmailSession, Get-Mailbox, 
-                                        Get-Message, Measure-Message, Remove-Message, Update-Message, 
-                                        Get-Label, New-Label, Remove-Label, Set-Label, Move-Message 
+                                       Get-GmailSession, Clear-GmailSession, Get-Mailbox, Get-Message, 
+                                       Measure-Message, Remove-Message, Update-Message, Move-Message, 
+                                       Get-Label, New-Label, Remove-Label, Set-Label, Receive-Message, 
+                                       Save-Attachment

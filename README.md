@@ -110,29 +110,25 @@ PS> foreach ($msg in $messages) {
     
 ### Working with emails!
 
-Delete emails from X:
+Delete all emails from X:
 
 ```powershell
-PS> $inbox | Filter-Message -From "x@gmail.com" | ForEach-Object { Remove-Message $_ }
+PS> $inbox | Filter-Message -From "x@gmail.com" | Remove-Message
 ```
 
-Save all attachments in the "Important" label to a local folder:
+Save all attachments in the "Important" label to a local folder. 
+Note that without the `-Prefetch` parameter, no attachments will be downloaded from the server:
 
 ```powershell
-PS> $messages = $gmail | Get-Mailbox -Label "Important" | Get-Message
-PS> foreach ($msg in $messages) {
->>     if ($msg.HasAttachments) {
->>         $msg.FetchAttachments($folder)
->>     }
->> }
+PS> $gmail | Get-Mailbox -Label "Important" | Get-Message -Prefetch | Save-Attachment $folder
 ```
 
 Save just the first attachment from the newest unread email:
 
 ```powershell
 PS> $msg = $inbox | Filter-Message -Unread | Select-Object -Last 1
-PS> $msg.Fetch()
-PS> $msg.Attachments[0].SaveTo($location)
+PS> $fetchedMsg = $msg | Receive-Message # or use -Prefetch on Filter-Message above
+PS> $fetchedMsg.Attachments[0].Save($location)
 ```
 
 Get all labels applied to a message:
