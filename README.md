@@ -69,7 +69,7 @@ Get the messages marked as Important by Gmail:
 PS> $gmail | Get-Mailbox "Important"
 ```
 
-With `Get-Mailbox` you can access the `"All Mail"`, `"Starred`", `"Drafts"`, `"Important"`, `"Sent Mail"` and `"Spam"` folders
+With `Get-Mailbox` you can access the `"All Mail"`, `"Starred"`, `"Drafts"`, `"Important"`, `"Sent Mail"` and `"Spam"` folders
 
 Filter with some criteria:
 

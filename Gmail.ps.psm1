@@ -12,10 +12,29 @@ function New-GmailSession {
     $gport = 993
     $guser = $Credential.UserName
     $gpass = $Credential.GetNetworkCredential().Password
-
+    
     $session = New-Object -TypeName AE.Net.Mail.ImapClient -ArgumentList $ghost,$guser,$gpass,Login,$gport,$true,$false
     $GmailSessions += $session
     $session
+
+<#
+.Synopsis
+    Creates a Gmail session.
+.Description
+    Opens a connection to a Gmail account using the specified credentials and creates a new session. If a generic credential is 
+    created using the Windows Credential Manager (address: 'Gmail.ps:default'), a session is automatically created using the 
+    stored credentials each time the cmdlet is executed without a -Credential parameter
+.Parameter Credential
+    The credentials that will be used to connect to Gmail.
+.Link
+    Remove-GmailSession
+.Link
+    Invoke-GmailSession
+.Link
+    Get-GmailSession
+.Link
+    Clear-GmailSession
+#>
 }
 
 function Remove-GmailSession {
@@ -26,6 +45,23 @@ function Remove-GmailSession {
     )
 
     $Session.Disconnect()
+
+<#
+.Synopsis
+    Removes a Gmail session.
+.Description
+    Closes the connection to Gmail and destroys the session.
+.Parameter Credential
+    The credentials that will be used to connect to Gmail.
+.Link
+    New-GmailSession
+.Link
+    Invoke-GmailSession
+.Link
+    Get-GmailSession
+.Link
+    Clear-GmailSession
+#>
 }
 
 function Invoke-GmailSession {
@@ -41,15 +77,71 @@ function Invoke-GmailSession {
     $gmail = New-GmailSession -Credential $Credential
     & $ScriptBlock $gmail
     $gmail | Remove-GmailSession
+
+<#
+.Synopsis
+    Invokes a block of code on a Gmail session.
+.Description
+    Creates new Gmail session and passes it to a script block. Once the block is executed, the session is automatically closed.
+.Parameter ScriptBlock
+    Script that is executed once a session is opened.
+.Parameter Credential
+    The credentials that will be used to connect to Gmail.
+.Link
+    New-GmailSession
+.Link
+    Remove-GmailSession
+.Example
+    PS> Invoke-GmailSession -ScriptBlock {
+    PS>     $args | Count-Message
+    PS> }
+
+    Description
+    -----------
+    Creates a Gmail session, returns the number of messages in the Inbox and then closes the session.
+    The automatically created session can be accessed inside the script block via the $args variable.
+.Example
+    PS> Invoke-GmailSession -ScriptBlock {
+    PS>     param($gmail)
+    PS>     $gmail | Get-Label
+    PS> }
+
+    Description
+    -----------
+    Creates a Gmail session, returns all the labels used in that account and then closes the session.
+    The automatically created session can be accessed inside the script block via the $gmail variable.
+#>
 }
 
 function Get-GmailSession {
     $GmailSessions
+
+<#
+.Synopsis
+    Returns a list of all opened Gmail sessions.
+.Description
+    Returns a list of all opened Gmail sessions.
+.Link
+    New-GmailSession
+.Link
+    Clear-GmailSession
+#>
 }
 
 function Clear-GmailSession {
     $GmailSessions | ForEach-Object -Process { $_ | Remove-GmailSession }
     $GmailSessions = @();
+
+<#
+.Synopsis
+    Closes all opened Gmail sessions.
+.Description
+    Closes all opened Gmail sessions.
+.Link
+    New-GmailSession
+.Link
+    Get-GmailSession
+#>
 }
 
 function Get-Mailbox {
@@ -75,6 +167,24 @@ function Get-Mailbox {
     }
 
     AddSessionTo $mailbox $Session
+
+<#
+.Synopsis
+    Returns a mailbox.
+.Description
+    Returns the Inbox if no parameters are specified, an existing Label or one of the default 
+    Gmail folders (All Mail, Starred, Drafts, Important, Sent Mail, Spam)
+.Parameter Session
+    The opened session that will be manipulated.
+.Parameter Name
+    The name of the default Gmail folder to be accessed.
+.Parameter Label
+    The name of an existing label to be accessed.
+.Link
+    Get-Message
+.Link
+    Measure-Message
+#>
 }
 
 function Get-Message {
@@ -101,8 +211,7 @@ function Get-Message {
         [string]$Text,
         [string]$Body,
         [string]$Subject,
-        [string]$Label,
-        [string]$Query
+        [string]$Label
     )
 
     $ar = @()
@@ -169,10 +278,6 @@ function Get-Message {
         $ar += 'LABEL "' + $Label + '"'
     }
 
-    if ($Query) {
-        $ar += 'QUERY "' + $Query + '"'
-    }
-
     if ($Subject) {
         $ar += 'SUBJECT "' + $Subject + '"'
     }
@@ -188,14 +293,62 @@ function Get-Message {
         $i += 1
     }
 
-}
-
-function GetRFC2060Date([DateTime]$date) {
-    $date.ToString("dd-MMM-yyyy hh:mm:ss zz", [CultureInfo]::GetCultureInfo("en-US"))
-}
-
-function AddSessionTo($item, [AE.Net.Mail.ImapClient]$session) {
-    $item | Add-Member -MemberType NoteProperty -Name Session -Value $session -PassThru
+<#
+.Synopsis
+    Returns a list of messages.
+.Description
+    Returns a (filtered) list of the messages inside a selected mailbox (using Get-Mailbox).
+.Parameter Session
+    The opened session that will be manipulated.
+.Parameter Prefetch
+    If specified, fetches the message's body and attachments; otherwise only the headers are downloaded from the server
+.Parameter Unread
+    Forces only unread messages to be returned
+.Parameter Read
+    Forces only read messages to be returned
+.Parameter Answered
+    Forces only messages that has been answered to, to be returned
+.Parameter Draft
+    If set, only drafts will be returned
+.Parameter Undraft
+    If set, only non-draft messages will be returned
+.Parameter Starred
+    Indicates only starred mesages to be returned
+.Parameter Unstarred
+    Indicates only mesages that are not marked with Star to be returned
+.Parameter On
+    Filters the messages based on an exact date of receiving 
+.Parameter After
+    Returns only messages received after a given date
+.Parameter Before
+    Returns only messages received before a given date
+.Parameter From
+    Filters the messages based on the sender's name and email address
+.Parameter To
+    Filters the messages based on the recipient's name and email address
+.Parameter Cc
+    Filters the messages based on the Cc recipient's name and email address
+.Parameter Bcc
+    Filters the messages based on the Bcc recipient's name and email address
+.Parameter Text
+    A text to search the entire message for
+.Parameter Body
+    A substring to search the message's body for
+.Parameter Subject
+    A substring to search the message's subject for
+.Parameter Label
+    Returns only messages having a particular label applied    
+.Link
+    Get-Message
+.Link
+    Update-Message
+.Link
+    Remove-Message
+.Link
+    Measure-Message
+.Link
+    Reveive-Message
+#>
 }
 
 function Remove-Message {
@@ -210,6 +363,21 @@ function Remove-Message {
     process {
         $Session.DeleteMessage($Message)
     }
+
+<#
+.Synopsis
+    Deletes a message.
+.Description
+    Sends a message to the Gmail's Trash folder.
+.Parameter Session
+    The opened session that will be manipulated.
+.Parameter Message
+    The message that will be deleted.
+.Link
+    Get-Message
+.Link
+    Update-Message
+#>
 }
 
 function Update-Message {
@@ -285,6 +453,33 @@ function Update-Message {
             }
         }
     }
+
+<#
+.Synopsis
+    Flags a message.
+.Description
+    Archives, marks as spam, as read/undead or adds/removes a star from a given message.
+.Parameter Session
+    The opened session that will be manipulated.
+.Parameter Message
+    The message that will be updated.
+.Parameter Read
+    Marks a message as read
+.Parameter Unread
+    Marks a message as undead
+.Parameter Star
+    Flags a message with a Star
+.Parameter Unstar
+    Removes the star from a message
+.Parameter Archive
+    Archives a message
+.Parameter Spam
+    Forces a message to be marked as spam
+.Link
+    Get-Message
+.Link
+    Remove-Message
+#>
 }
 
 function Receive-Message {
@@ -300,6 +495,19 @@ function Receive-Message {
     process {
         $Session.GetMessage($Message.Uid, $false)
     }
+
+<#
+.Synopsis
+    Fetches a message.
+.Description
+    Fetches the whole message from the server (including the body and the attachments).
+.Parameter Session
+    The opened session that will be manipulated.
+.Parameter Message
+    The message that will be fetched.
+.Link
+    Get-Message
+#>
 }
 
 function Move-Message {
@@ -311,11 +519,11 @@ function Move-Message {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AE.Net.Mail.MailMessage]$Message,
 
-        [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName = $true, ParameterSetName = "A")]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName = $true, ParameterSetName = "DefaultFolder")]
         [ValidateSet("Inbox", "All Mail", "Starred", "Drafts", "Important", "Sent Mail", "Spam")]
         [string]$Mailbox,
 
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = "B")]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = "LabelFolder")]
         [string]$Label
     )
 
@@ -324,6 +532,23 @@ function Move-Message {
     } elseif ($Mailbox ) {
         $Session.MoveMessage($Message.Uid, $Mailbox)
     }
+
+<#
+.Synopsis
+    Moves a message.
+.Description
+    Moves a message to a different mailbox or label
+.Parameter Session
+    The opened session that will be manipulated.
+.Parameter Message
+    The message that will be fetched.
+.Parameter Mailbox
+    The name of a mailbox the message will be moved to.
+.Parameter Label
+    The name of a label the message will be moved to.
+.Link
+    Get-Message
+#>
 }
 
 function Measure-Message {
@@ -334,6 +559,17 @@ function Measure-Message {
     )
 
     $Session.GetMessageCount()
+
+<#
+.Synopsis
+    Counts messages.
+.Description
+    Returns the number of messages in a mailbox (supports labels too).
+.Parameter Session
+    The opened session that will be manipulated.
+.Link
+    Get-Message
+#>
 }
 
 function Save-Attachment {
@@ -357,6 +593,23 @@ function Save-Attachment {
             $a.Save((Join-Path $loc $a.Filename))
         }
     }
+
+<#
+.Synopsis
+    Downloads the attachments of a message.
+.Description
+    Downloads the attachments of a message to a local forlder.
+.Parameter Message
+    The message whose attachments will be downloaded
+.Parameter Path
+    Specifies a path to the directory where the attachments will be saved
+.Parameter LiteralPath
+    Specifies a path to the directory where the attachments will be saved. The value of the LiteralPath parameter is used 
+    exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in 
+    single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.
+.Link
+    Get-Message
+#>
 }
 
 function Get-Label {
@@ -387,6 +640,23 @@ function Get-Label {
             }
         }
     }
+
+<#
+.Synopsis
+    Returns the labels applied to a message or all labels that exist.
+.Description
+    Returns the labels applied to a message or all labels that exist.
+.Parameter Session
+    The opened session that will be used to fetch all existing labels.
+.Parameter Message
+    The message whose labels will be returned
+.Link
+    New-Label
+.Link
+    Set-Label
+.Link
+    Remove-Label
+#>
 }
 
 function New-Label {
@@ -403,6 +673,23 @@ function New-Label {
     {
         $Session.CreateMailbox($item)
     }
+
+<#
+.Synopsis
+    Creates a label.
+.Description
+    Creates a new label.
+.Parameter Session
+    The opened session that will be manipulated.
+.Parameter Name
+    The of the label that will be created.
+.Link
+    Get-Label
+.Link
+    Set-Label
+.Link
+    Remove-Label
+#>
 }
 
 function Remove-Label {
@@ -426,6 +713,25 @@ function Remove-Label {
             $Session.DeleteMailbox($item)
         }
     }
+
+<#
+.Synopsis
+    Removes a label from a message or deletes the label from the account.
+.Description
+    Removes a label from a message or deletes the label from the account.
+.Parameter Session
+    The opened session that will be manipulated.
+.Parameter Name
+    The of the label that will be removed.
+.Parameter Message
+    The message from which the label will be removed; if not specified the label will be deleted from the account
+.Link
+    Get-Label
+.Link
+    Set-Label
+.Link
+    New-Label
+#>
 }
 
 function Set-Label {
@@ -463,6 +769,36 @@ function Set-Label {
             $Session.AddLabels($Name, @($Message))
         }
     }
+
+<#
+.Synopsis
+   Adds a label to a message.
+.Description
+   Adds a label to a message.
+.Parameter Session
+    The opened session that will be manipulated.
+.Parameter Message
+    The message to which the label will be applied.
+.Parameter Name
+    The name of the label that will be apllied.
+.Parameter Force
+    Forces the creation of the label if it doesn't exist. An error will be thrown if the 
+    label doesn't exist and the command is executed without the -Force parameter
+.Link
+    Get-Label
+.Link
+    New-Label
+.Link
+    Remove-Label
+#>
+}
+
+function GetRFC2060Date([DateTime]$date) {
+    $date.ToString("dd-MMM-yyyy hh:mm:ss zz", [CultureInfo]::GetCultureInfo("en-US"))
+}
+
+function AddSessionTo($item, [AE.Net.Mail.ImapClient]$session) {
+    $item | Add-Member -MemberType NoteProperty -Name Session -Value $session -PassThru
 }
 
 function Get-StoredCredential
