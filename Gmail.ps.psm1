@@ -201,6 +201,7 @@ function Get-Message {
         [switch]$Undraft,
         [switch]$Starred,
         [switch]$Unstarred,
+        [switch]$HasAttachment,
         [DateTime]$On,
         [DateTime]$After,
         [DateTime]$Before,
@@ -211,79 +212,108 @@ function Get-Message {
         [string]$Text,
         [string]$Body,
         [string]$Subject,
-        [string]$Label
+        [string]$Label,
+        [string]$FileName,
+
+        [ValidateSet("Primary", "Personal", "Social", "Promotions", "Updates", "Forums")]
+        [string]$Category
     )
 
-    $ar = @()
+    $imap = @()
+    $xgm = @()
 
     if ($Unread) {
-        $ar += "UNSEEN"
+        $imap += "UNSEEN"
     } elseif ($Read) {
-        $ar += "SEEN"
+        $imap += "SEEN"
     }
 
     if ($Answered) {
-        $ar += "ANSWERED"
+        $imap += "ANSWERED"
     }
 
     if ($Draft) {
-        $ar += "DRAFT"
+        $imap += "DRAFT"
     } elseif ($Undraft) {
-        $ar += "UNDRAFT"
+        $imap += "UNDRAFT"
     }
 
     if ($Starred) {
-        $ar += "FLAGGED"
+        $imap += "FLAGGED"
     } elseif ($Unstarred) {
-        $ar += "UNFLAGGED"
+        $imap += "UNFLAGGED"
     }
 
     if ($On) {
-        $ar += 'ON "' + $(GetRFC2060Date $After) + '"'
+        $imap += 'ON "' + $(GetRFC2060Date $After) + '"'
     }
 
     if ($From) {
-        $ar += 'FROM "' + $From + '"'
+        $imap += 'FROM "' + $From + '"'
     }
 
     if ($To) {
-        $ar += 'TO "' + $To + '"'
+        $imap += 'TO "' + $To + '"'
     }
 
     if ($After) {
-        $ar += 'AFTER "' + $(GetRFC2060Date $After) + '"'
+        $imap += 'AFTER "' + $(GetRFC2060Date $After) + '"'
     }
 
     if ($Before) {
-        $ar += 'BEFORE "' + $(GetRFC2060Date $Before) + '"'
+        $imap += 'BEFORE "' + $(GetRFC2060Date $Before) + '"'
     }
 
     if ($Cc) {
-        $ar += 'CC "' + $Cc + '"'
+        $imap += 'CC "' + $Cc + '"'
     }
 
     if ($Bcc) {
-        $ar += 'BCC "' + $Bcc + '"'
+        $imap += 'BCC "' + $Bcc + '"'
     }
 
     if ($Text) {
-        $ar += 'TEXT "' + $Text + '"'
+        $imap += 'TEXT "' + $Text + '"'
     }
 
     if ($Body) {
-        $ar += 'BODY "' + $Body + '"'
-    }
-
-    if ($Label) {
-        $ar += 'LABEL "' + $Label + '"'
+        $imap += 'BODY "' + $Body + '"'
     }
 
     if ($Subject) {
-        $ar += 'SUBJECT "' + $Subject + '"'
+        $imap += 'SUBJECT "' + $Subject + '"'
+    }
+    
+    if ($Label) {
+        $xgm += 'label:' + $Label
     }
 
-    $criteria = '(' + ($ar -join ') (') + ')'
-    $result = $Session.Search($criteria);
+    if ($HasAttachment) {
+        $xgm += 'has:attachment'
+    }
+
+    if ($FileName) {
+        $xgm += 'filename:' + $FileName
+    }
+
+    if ($Category) {
+        $xgm += 'category:' + $Category
+    }
+
+    if ($imap.Length -gt 0) {
+        $criteria = ($imap -join ') (')
+    }
+
+    if ($xgm.Length -gt 0) {
+        $gmcr = 'X-GM-RAW "' + ($xgm -join ' ') + '"'
+        if ($imap.Length -gt 0) {
+            $criteria = $criteria + ' (' + $gmcr + ')'
+        } else {
+            $criteria = $gmcr
+        }
+    }
+
+    $result = $Session.Search('(' + $criteria + ')');
     $i = 1
     foreach ($item in $result)
     {
@@ -337,7 +367,13 @@ function Get-Message {
 .Parameter Subject
     A substring to search the message's subject for
 .Parameter Label
-    Returns only messages having a particular label applied    
+    Returns only messages having a particular label applied
+.Parameter HasAttachment
+    Returns only messages with attachments
+.Parameter FileName
+    Returns only messages having attachments with a given name
+.Parameter Category
+    Returns only messages within a particular category
 .Link
     Get-Message
 .Link
