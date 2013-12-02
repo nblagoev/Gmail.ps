@@ -134,33 +134,33 @@ PS> $fetchedMsg.Attachments[0].Save($location)
 Get all labels applied to a message:
 
 ```powershell
-$msg | Get-Label
+PS> $msg | Get-Label
 ```
 
 Add a label to a message (or remove it):
 
 ```powershell
-$msg | Set-Label "Important"
-$msg | Remove-Label "Important"
+PS> $msg | Set-Label "Important"
+PS> $msg | Remove-Label "Important"
 ```
 
 You can apply multiple lables:
 
 ```powershell
-$msg | Set-Label "Important","Banking"
+PS> $msg | Set-Label "Important","Banking"
 ```
 
 The example above will raise error when you don't have one of the specified labels. You can avoid this using:
 
 ```powershell
-$msg | Set-Label "Important","Banking" -Force # If one of the labels does't exist, it will be automatically created now
+PS> $msg | Set-Label "Important","Banking" -Force # If one of the labels does't exist, it will be automatically created now
 ```
 
 You can also move message to a label/mailbox:
 
 ```powershell
-$msg | Move-Message -Label "Test"
-$msg | Move-Message "All Mail"
+PS> $msg | Move-Message -Label "Test"
+PS> $msg | Move-Message "All Mail"
 ```
 
 ### Managing labels
@@ -168,31 +168,31 @@ $msg | Move-Message "All Mail"
 With the Gmail module you can also manage your labels. You can get list of defined labels:
 
 ```powershell
-$gmail | Get-Label
+PS> $gmail | Get-Label
 ```
 
 Create new label:
 
 ```powershell
-$gmail | New-Label -Name "MyLabel"
+PS> $gmail | New-Label -Name "MyLabel"
 ```
 
 Remove labels:
 
 ```powershell
-$gmail | Remove-Label -Name "MyLabel"
+PS> $gmail | Remove-Label -Name "MyLabel"
 ```
 
 Or check if given label exists:
 
 ```powershell
-$gmail | Get-Label -Name "SomeLabel" # returns null if the label doesn't exist
+PS> $gmail | Get-Label -Name "SomeLabel" # returns null if the label doesn't exist
 ```
 
 Cmdlets that can take a label name as a parameter value (`Get-Message`, `Move-Message`, `Set-Label` and `Remove-Label`) support automatic completion:
 
 ```powershell
-$gmail | Remove-Label <tab> # use <tab> key to cycle through all existing labels
+PS> $gmail | Remove-Label <tab> # use <tab> key to cycle through all existing labels
 ```
 
 ## Roadmap
