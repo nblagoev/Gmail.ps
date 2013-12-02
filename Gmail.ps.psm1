@@ -787,7 +787,7 @@ function Set-Label {
     )
 
     process {
-        $labels = $Session | Get-Label
+        $labels = $Session | Get-Label | ForEach-Object { $_.Name };
         
         foreach ($label in $Name)
         {
