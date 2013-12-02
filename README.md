@@ -4,7 +4,7 @@ A PowerShell module for managing your Gmail, with all the tools you'll need. Sea
 read and send emails, archive, mark as read/unread, delete emails, 
 and manage labels.
 
-__This library is still under development.__
+__This module is still under development.__
 
 ## Installation
 
@@ -66,7 +66,7 @@ PS> $inbox | Filter-Message -Unread
 Get the messages marked as Important by Gmail:
 
 ```powershell
-PS> $gmail | Get-Mailbox "Important"
+PS> $gmail | Get-Mailbox "Important" | Get-Message
 ```
 
 With `Get-Mailbox` you can access the `"All Mail"`, `"Starred"`, `"Drafts"`, `"Important"`, `"Sent Mail"` and `"Spam"` folders
@@ -126,7 +126,7 @@ PS> $gmail | Get-Mailbox -Label "Important" | Get-Message -Prefetch | Save-Attac
 Save just the first attachment from the newest unread email:
 
 ```powershell
-PS> $msg = $inbox | Filter-Message -Unread | Select-Object -Last 1
+PS> $msg = $inbox | Filter-Message -Unread -HasAttachment | Select-Object -Last 1
 PS> $fetchedMsg = $msg | Receive-Message # or use -Prefetch on Filter-Message above
 PS> $fetchedMsg.Attachments[0].Save($location)
 ```
