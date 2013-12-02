@@ -854,10 +854,10 @@ function global:TabExpansion($line, $lastWord) {
             "^($(Get-AliasPattern Remove-Label)|$(Get-AliasPattern Set-Label))(.*)$" { Get-LabelsForSession $svar $lastWord }
 
             # Fall back on existing tab expansion
-            default { DefaultTabExpansion }
+            default { DefaultTabExpansion $line $lastWord }
         }
     } else {
-        DefaultTabExpansion
+        DefaultTabExpansion $line $lastWord
     }
 }
 
