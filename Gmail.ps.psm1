@@ -829,6 +829,53 @@ function Set-Label {
 #>
 }
 
+
+if (Test-Path Function:\TabExpansion) {
+    Rename-Item Function:\TabExpansion TabExpansionBackup
+}
+
+function TabExpansion($line, $lastWord) {
+    $lastBlock = ($line -split ';')[-1].TrimStart()
+    $r = $lastBlock -match "^\`$(?<cmd>(?:\w|_)+)\s*\|\s*(?<rest>.*)$"
+    $var = "Variable:\$($Matches['cmd'])"
+
+    if ($r -and $Matches['cmd'] -and (Test-Path $var) -and ((Get-Item $var).Value.ToString() -eq "AE.Net.Mail.ImapClient")) {
+        switch -regex ($Matches['rest']) {
+            # Execute Gmail.ps tab completion for all related commands
+            "^$(Get-LabelCmdPattern)(.*)-(Name|Label)\s?(.*)$" { Get-LabelsForSession $var $lastWord }
+            "^($(Get-AliasPattern Remove-Label)|$(Get-AliasPattern Set-Label))(.*)$" { Get-LabelsForSession $var $lastWord }
+
+            # Fall back on existing tab expansion
+            default { DefaultTabExpansion }
+        }
+    } else {
+        DefaultTabExpansion
+    }
+}
+
+function DefaultTabExpansion($line, $lastWord) {
+    if (Test-Path Function:\TabExpansionBackup) { TabExpansionBackup $line $lastWord }
+}
+
+function Get-LabelCmdPattern {
+    $cmdlets = @("Get-Message", "Move-Message", "Remove-Label", "Set-Label")
+    $pattern = @()
+    
+    foreach ($cmd in $cmdlets) {
+        $pattern += Get-AliasPattern
+    }
+
+    "($($pattern -join '|'))"
+}
+
+function Get-AliasPattern($cmd) {
+    @(Get-Alias -Definition $cmd | Select-Object -ExpandProperty Name) -join '|'
+}
+
+function Get-LabelsForSession($session, $filter) {
+    (Get-Item $session).Value | Get-Label -Like $filter | foreach { $_.Name }
+}
+
 function GetRFC2060Date([DateTime]$date) {
     $date.ToString("dd-MMM-yyyy hh:mm:ss zz", [CultureInfo]::GetCultureInfo("en-US"))
 }
@@ -1004,4 +1051,4 @@ Export-ModuleMember -Alias * -Function New-GmailSession, Remove-GmailSession, In
                                        Get-GmailSession, Clear-GmailSession, Get-Mailbox, Get-Message, 
                                        Measure-Message, Remove-Message, Update-Message, Move-Message, 
                                        Get-Label, New-Label, Remove-Label, Set-Label, Receive-Message, 
-                                       Save-Attachment
+                                       Save-Attachment, TabExpansion

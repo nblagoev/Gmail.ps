@@ -189,6 +189,12 @@ Or check if given label exists:
 $gmail | Get-Label -Name "SomeLabel" # returns null if the label doesn't exist
 ```
 
+Cmdlets that can take a label name as a parameter value (`Get-Message`, `Move-Message`, `Set-Label` and `Remove-Label`) support automatic completion:
+
+```powershell
+$gmail | Remove-Label <tab> # use <tab> key to cycle through all existing labels
+```
+
 ## Roadmap
 * Write tests
 * Prettify the output
