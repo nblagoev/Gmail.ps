@@ -883,7 +883,7 @@ function Get-LabelCmdPattern {
     $pattern = @()
     
     foreach ($cmd in $cmdlets) {
-        $pattern += Get-AliasPattern
+        $pattern += Get-AliasPattern $cmd
     }
 
     "($($pattern -join '|'))"
