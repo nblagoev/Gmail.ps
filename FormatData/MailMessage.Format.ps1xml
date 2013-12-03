@@ -9,15 +9,19 @@
       <TableControl>
         <TableHeaders>
             <TableColumnHeader>
+                <Width>6</Width>
+                <Label>Flags</Label>
+            </TableColumnHeader>
+            <TableColumnHeader>
                 <Width>50</Width>
                 <Label>Subject</Label>
             </TableColumnHeader>
             <TableColumnHeader>
-                <Width>30</Width>
+                <Width>20</Width>
                 <Label>From</Label>
             </TableColumnHeader>
             <TableColumnHeader>
-                <Width>25</Width>
+                <Width>20</Width>
                 <Label>Date</Label>
             </TableColumnHeader>
             <TableColumnHeader>
@@ -28,6 +32,43 @@
             <TableRowEntry>
                 <Wrap/>
                 <TableColumnItems>
+                    <TableColumnItem>
+                        <ScriptBlock>
+                            $flags = @()
+
+                            if ($_.RawFlags.Contains('\Seen')) {
+                                $flags += "-"
+                            } else {
+                                $flags += "u"
+                            }
+
+                            if ($_.Body -eq $null) {
+                                $flags += "-"
+                            } else {
+                                $flags += "f"
+                            }
+
+                            if ($_.Labels.Contains('"\\Important"')) {
+                                $flags += "i"
+                            } else {
+                                $flags += "-"
+                            }
+
+                            if ($_.Labels.Contains('"\\Starred"')) {
+                                $flags += "s"
+                            } else {
+                                $flags += "-"
+                            }
+                            
+                            if ($_.Attachments) {
+                                $flags += "a"
+                            } else {
+                                $flags += "-"
+                            }
+
+                            $flags -join ''
+                        </ScriptBlock>
+                    </TableColumnItem>
                     <TableColumnItem>
                         <PropertyName>Subject</PropertyName>
                     </TableColumnItem>
@@ -41,7 +82,8 @@
                     </TableColumnItem>
                     <TableColumnItem>
                         <ScriptBlock>
-                            ($_.Labels | Format-List | Out-String).Trim()
+                            $ignore = @('"\\Important"', '"\\Starred"')
+                            ($_.Labels | where { $_ -notin $ignore } | Format-List | Out-String).Trim()
                         </ScriptBlock>
                     </TableColumnItem>
                 </TableColumnItems>

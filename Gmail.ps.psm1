@@ -327,7 +327,20 @@ function Get-Message {
 .Synopsis
     Returns a list of messages.
 .Description
-    Returns a (filtered) list of the messages inside a selected mailbox (using Get-Mailbox).
+    Returns a (filtered) list of the messages inside a selected mailbox (see Get-Mailbox).
+
+    Every listed message has a set of flags indicating the message's status and properties.
+
+    Flags' meaning:
+        ufisa       The message:
+        ^____________ is unread
+         ^___________ is fetched
+          ^__________ is important
+           ^_________ is starred
+            ^________ has attachment
+
+    Any flag may be unset. An unset flag is the equivalent of "is not" and is represented as a "-" character.
+    '--i-a' means the message is not Unread, is not Fetched, is Important, is not Starred and has atleast one attachment.
 .Parameter Session
     The opened session that will be manipulated.
 .Parameter Prefetch
