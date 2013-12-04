@@ -1,4 +1,14 @@
 ﻿
+
+$isAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
+            [Security.Principal.WindowsBuiltInRole] "Administrator")
+
+if ($PSVersionTable["PSVersion"].Major -eq 2 -and !$isAdmin) {
+    Write-Host "To install Gmail.ps on PowerShell 2.0, pease run this script as Administrator" -Foreground Red
+    return
+}
+
+$ErrorCount = $Error.Count
 $ModulePaths = @($Env:PSModulePath -split ';')
 
 $ExpectedUserModulePath = Join-Path -Path ([Environment]::GetFolderPath('MyDocuments')) -ChildPath WindowsPowerShell\Modules
@@ -20,6 +30,7 @@ try {
     $hasGit = $true
 } catch {
     $hasGit = $false
+    $ErrorCount -= 1
 }
 
 $CurrentLocation = Get-Location
@@ -62,7 +73,38 @@ For more information execute:
 }
 
 if (!$executionRestricted) {
-    Import-Module -Name $Destination\Gmail.ps
+    if ($PSVersionTable["PSVersion"].Major -gt 2) {
+        Import-Module -Name $Destination\Gmail.ps
+    } else {
+        # TODO: Do this the correct way:
+        # Using COMPLUS_ApplicationMigrationRuntimeActivationConfigPath env variable
+        $config_text = @"
+<?xml version="1.0"?>
+<configuration>
+    <startup useLegacyV2RuntimeActivationPolicy="true">
+        <supportedRuntime version="v4.0"/>
+        <supportedRuntime version="v2.0"/>
+    </startup>
+</configuration>
+"@
+        if (Test-Path $pshome\powershell.exe.config) {
+            Copy-Item $pshome\powershell.exe.config $pshome\powershell.exe.config.old -Force
+            Write-Host "Backup created at $pshome\powershell.exe.config.old"
+        }
+
+        if (Test-Path $pshome\powershell_ise.exe.config) {
+            Copy-Item $pshome\powershell_ise.exe.config $pshome\powershell_ise.exe.config.old -Force
+            Write-Host "Backup created at $pshome\powershell_ise.exe.config.old"
+        }
+
+        $config_text | Out-File $pshome\powershell.exe.config
+        $config_text | Out-File $pshome\powershell_ise.exe.config
+        Write-Host "Please restart PowerShell"
+    }
 }
 
-Write-Host "Gmail.ps is installed and ready to use" -Foreground Green
+if ($ErrorCount -ne $Error.Count) {
+    Write-Host "Gmail.ps is installed and ready to use" -Foreground Green
+} else {
+    Write-Host "Something went wrong" -Foreground Red
+}
