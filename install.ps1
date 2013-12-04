@@ -99,12 +99,12 @@ if (!$executionRestricted) {
 
         $config_text | Out-File $pshome\powershell.exe.config
         $config_text | Out-File $pshome\powershell_ise.exe.config
-        Write-Host "Please restart PowerShell"
+        Write-Host "Please restart PowerShell!"
     }
 }
 
-if ($ErrorCount -ne $Error.Count) {
+if ($ErrorCount -eq $Error.Count) {
     Write-Host "Gmail.ps is installed and ready to use" -Foreground Green
 } else {
-    Write-Host "Something went wrong" -Foreground Red
+    Write-Host "Something went wrong. Gmail.ps may not work." -Foreground Red
 }
