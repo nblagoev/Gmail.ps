@@ -1,4 +1,5 @@
 ﻿
+$ErrorCount = $Error.Count
 $ModulePaths = @($Env:PSModulePath -split ';')
 
 $ExpectedUserModulePath = Join-Path -Path ([Environment]::GetFolderPath('MyDocuments')) -ChildPath WindowsPowerShell\Modules
@@ -20,6 +21,7 @@ try {
     $hasGit = $true
 } catch {
     $hasGit = $false
+    $ErrorCount -= 1
 }
 
 $CurrentLocation = Get-Location
@@ -65,4 +67,8 @@ if (!$executionRestricted) {
     Import-Module -Name $Destination\Gmail.ps
 }
 
-Write-Host "Gmail.ps is installed and ready to use" -Foreground Green
+if ($ErrorCount -eq $Error.Count) {
+    Write-Host "Gmail.ps is installed and ready to use" -Foreground Green
+} else {
+    Write-Host "Something went wrong. Gmail.ps may not work." -Foreground Red
+}
