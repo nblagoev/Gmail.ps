@@ -52,8 +52,8 @@ and manage labels.</p>
 
 <p>If you have <a href="http://psget.net/">PsGet</a> installed you can simply execute:</p>
 
-<pre><code>Install-Module Gmail.ps
-</code></pre>
+<div class="highlight highlight-powershell"><pre><span class="n">Install-Module</span> <span class="n">Gmail</span><span class="p">.</span><span class="n">ps</span>
+</pre></div>
 
 <p>Or install it manually:</p>
 
@@ -92,9 +92,9 @@ Gmail username and password, and use <code>Gmail.ps:default</code> as address. <
 and will be logged out after it's executed. Use <code>$args</code> to access the session or parameterize the block: </p>
 
 <div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nb">Invoke-GmailSession</span> <span class="n">-ScriptBlock</span> <span class="p">{</span>
-<span class="n">PS</span><span class="p">&gt;</span>     <span class="k">param</span><span class="p">(</span><span class="nv">$gmail</span><span class="p">)</span> <span class="c"># to use $gmail instead of $args</span>
-<span class="n">PS</span><span class="p">&gt;</span>     <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Label</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="p">}</span>
+<span class="p">&gt;&gt;</span>      <span class="k">param</span><span class="p">(</span><span class="nv">$gmail</span><span class="p">)</span> <span class="c"># to use $gmail instead of $args</span>
+<span class="p">&gt;&gt;</span>      <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Label</span>
+<span class="p">&gt;&gt;</span>  <span class="p">}</span>
 </pre></div>
 
 <p>You can also check which accounts are logged in at any time using <code>Get-GmailSession</code> or close all of them with <code>Clear-GmailSession</code>.</p>
@@ -105,7 +105,7 @@ and will be logged out after it's executed. Use <code>$args</code> to access the
 <p>Get the messages in the inbox:</p>
 
 <div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">=</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="k">Filter</span><span class="n">-Message</span> <span class="n">-Unread</span>
+<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span>
 </pre></div>
 
 <p>Get the messages marked as Important by Gmail:</p>
@@ -117,15 +117,15 @@ and will be logged out after it's executed. Use <code>$args</code> to access the
 
 <p>Filter with some criteria:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="k">Filter</span><span class="n">-Message</span> <span class="n">-After</span> <span class="s2">"2011-06-01"</span> <span class="n">-Before</span> <span class="s2">"2012-01-01"</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="k">Filter</span><span class="n">-Message</span> <span class="n">-On</span> <span class="s2">"2011-06-01"</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="k">Filter</span><span class="n">-Message</span> <span class="n">-From</span> <span class="s2">"x@gmail.com"</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="k">Filter</span><span class="n">-Message</span> <span class="n">-To</span> <span class="s2">"y@gmail.com"</span>
+<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-After</span> <span class="s2">"2011-06-01"</span> <span class="n">-Before</span> <span class="s2">"2012-01-01"</span>
+<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-On</span> <span class="s2">"2011-06-01"</span>
+<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-From</span> <span class="s2">"x@gmail.com"</span>
+<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-To</span> <span class="s2">"y@gmail.com"</span>
 </pre></div>
 
 <p>Combine flags and options:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="k">Filter</span><span class="n">-Message</span> <span class="n">-Unread</span> <span class="n">-From</span> <span class="s2">"myboss@gmail.com"</span>
+<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="n">-From</span> <span class="s2">"myboss@gmail.com"</span>
 </pre></div>
 
 <p>Browsing labeled emails is similar to working with the inbox.</p>
@@ -135,13 +135,13 @@ and will be logged out after it's executed. Use <code>$args</code> to access the
 
 <p>You can count the messages too:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="n">Count-Message</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="k">Filter</span><span class="n">-Message</span> <span class="n">-Unread</span> <span class="p">|</span> <span class="n">Count-Message</span>
+<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Measure-Message</span>
+<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="p">|</span> <span class="nb">Measure-Message</span>
 </pre></div>
 
 <p>Also you can manipulate each message using block style. Remember that every message in a conversation/thread will come as a separate message.</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$messages</span> <span class="p">=</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="k">Filter</span><span class="n">-Message</span> <span class="n">-Unread</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">-Last</span> <span class="n">10</span>
+<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$messages</span> <span class="p">=</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">-Last</span> <span class="n">10</span>
 <span class="n">PS</span><span class="p">&gt;</span> <span class="k">foreach</span> <span class="p">(</span><span class="nv">$msg</span> <span class="k">in</span> <span class="nv">$messages</span><span class="p">)</span> <span class="p">{</span>
 <span class="p">&gt;&gt;</span>     <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Update-Message</span> <span class="n">-Read</span> <span class="c"># you can use -Unread, -Spam, -Star, -Unstar, -Archive too</span>
 <span class="p">&gt;&gt;</span> <span class="p">}</span>
@@ -152,7 +152,7 @@ and will be logged out after it's executed. Use <code>$args</code> to access the
 
 <p>Delete all emails from X:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="k">Filter</span><span class="n">-Message</span> <span class="n">-From</span> <span class="s2">"x@gmail.com"</span> <span class="p">|</span> <span class="nb">Remove-Message</span>
+<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-From</span> <span class="s2">"x@gmail.com"</span> <span class="p">|</span> <span class="nb">Remove-Message</span>
 </pre></div>
 
 <p>Save all attachments in the "Important" label to a local folder. 
@@ -163,8 +163,8 @@ Note that without the <code>-Prefetch</code> parameter, no attachments will be d
 
 <p>Save just the first attachment from the newest unread email:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$msg</span> <span class="p">=</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="k">Filter</span><span class="n">-Message</span> <span class="n">-Unread</span> <span class="n">-HasAttachment</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">-Last</span> <span class="n">1</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$fetchedMsg</span> <span class="p">=</span> <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Receive-Message</span> <span class="c"># or use -Prefetch on Filter-Message above</span>
+<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$msg</span> <span class="p">=</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="n">-HasAttachment</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">-Last</span> <span class="n">1</span>
+<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$fetchedMsg</span> <span class="p">=</span> <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Receive-Message</span> <span class="c"># or use -Prefetch on Get-Message above</span>
 <span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$fetchedMsg</span><span class="p">.</span><span class="n">Attachments</span><span class="p">[</span><span class="n">0</span><span class="p">].</span><span class="n">Save</span><span class="p">(</span><span class="nv">$location</span><span class="p">)</span>
 </pre></div>
 
@@ -228,8 +228,8 @@ Note that without the <code>-Prefetch</code> parameter, no attachments will be d
 
 <ul>
 <li>Write tests</li>
-<li>Prettify the output</li>
 <li>Send mail via Google's SMTP servers</li>
+<li>Backup/restore all messages and labels</li>
 </ul><h2>
 <a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
 
@@ -253,7 +253,7 @@ Note that without the <code>-Prefetch</code> parameter, no attachments will be d
 <li>Copyright (c) 2013 Nikolay Blagoev</li>
 <li>Copyright (c) 2013 Andy Edinborough - AE.Net.Mail library</li>
 <li>Copyright (c) 2012 Tobias Burger - Get-StoredCredential cmdlet</li>
-</ul><p>See <a href="https://github.com/nikoblag/Gmail.ps/blob/master/LICENSE">LICENSE</a> for details.</p>
+</ul><p>See LICENSE for details.</p>
       </section>
 
     </div>
