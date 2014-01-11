@@ -11,7 +11,7 @@ __This module is still under development.__
 If you have [PsGet](http://psget.net/) installed you can simply execute:
 
 ```powershell
-    Install-Module Gmail.ps
+Install-Module Gmail.ps
 ```
 
 Or install it manually:
@@ -199,8 +199,8 @@ PS> $gmail | Remove-Label <tab> # use <tab> key to cycle through all existing la
 
 ## Roadmap
 * Write tests
-* Prettify the output
 * Send mail via Google's SMTP servers
+* Backup/restore all messages and labels
 
 ## Contributing
 
