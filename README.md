@@ -10,7 +10,9 @@ __This module is still under development.__
 
 If you have [PsGet](http://psget.net/) installed you can simply execute:
 
+```powershell
     Install-Module Gmail.ps
+```
 
 Or install it manually:
 
@@ -47,9 +49,9 @@ and will be logged out after it's executed. Use `$args` to access the session or
 
 ```powershell
 PS> Invoke-GmailSession -ScriptBlock {
-PS>     param($gmail) # to use $gmail instead of $args
-PS>     $gmail | Get-Label
-PS> }
+>>      param($gmail) # to use $gmail instead of $args
+>>      $gmail | Get-Label
+>>  }
 ```
 
 You can also check which accounts are logged in at any time using `Get-GmailSession` or close all of them with `Clear-GmailSession`.
@@ -60,7 +62,7 @@ Get the messages in the inbox:
 
 ```powershell
 PS> $inbox = $gmail | Get-Mailbox
-PS> $inbox | Filter-Message -Unread
+PS> $inbox | Get-Message -Unread
 ```
 
 Get the messages marked as Important by Gmail:
@@ -74,16 +76,16 @@ With `Get-Mailbox` you can access the `"All Mail"`, `"Starred"`, `"Drafts"`, `"I
 Filter with some criteria:
 
 ```powershell
-PS> $inbox | Filter-Message -After "2011-06-01" -Before "2012-01-01"
-PS> $inbox | Filter-Message -On "2011-06-01"
-PS> $inbox | Filter-Message -From "x@gmail.com"
-PS> $inbox | Filter-Message -To "y@gmail.com"
+PS> $inbox | Get-Message -After "2011-06-01" -Before "2012-01-01"
+PS> $inbox | Get-Message -On "2011-06-01"
+PS> $inbox | Get-Message -From "x@gmail.com"
+PS> $inbox | Get-Message -To "y@gmail.com"
 ```
 
 Combine flags and options:
 
 ```powershell
-PS> $inbox | Filter-Message -Unread -From "myboss@gmail.com"
+PS> $inbox | Get-Message -Unread -From "myboss@gmail.com"
 ```
 
 Browsing labeled emails is similar to working with the inbox.
@@ -95,14 +97,14 @@ PS> $gmail | Get-Mailbox -Label "Important"
 You can count the messages too:
 
 ```powershell
-PS> $inbox | Count-Message
-PS> $inbox | Filter-Message -Unread | Count-Message
+PS> $inbox | Measure-Message
+PS> $inbox | Get-Message -Unread | Measure-Message
 ```
     
 Also you can manipulate each message using block style. Remember that every message in a conversation/thread will come as a separate message.
 
 ```powershell
-PS> $messages = $inbox | Filter-Message -Unread | Select-Object -Last 10
+PS> $messages = $inbox | Get-Message -Unread | Select-Object -Last 10
 PS> foreach ($msg in $messages) {
 >>     $msg | Update-Message -Read # you can use -Unread, -Spam, -Star, -Unstar, -Archive too
 >> }
@@ -113,7 +115,7 @@ PS> foreach ($msg in $messages) {
 Delete all emails from X:
 
 ```powershell
-PS> $inbox | Filter-Message -From "x@gmail.com" | Remove-Message
+PS> $inbox | Get-Message -From "x@gmail.com" | Remove-Message
 ```
 
 Save all attachments in the "Important" label to a local folder. 
@@ -126,8 +128,8 @@ PS> $gmail | Get-Mailbox -Label "Important" | Get-Message -Prefetch | Save-Attac
 Save just the first attachment from the newest unread email:
 
 ```powershell
-PS> $msg = $inbox | Filter-Message -Unread -HasAttachment | Select-Object -Last 1
-PS> $fetchedMsg = $msg | Receive-Message # or use -Prefetch on Filter-Message above
+PS> $msg = $inbox | Get-Message -Unread -HasAttachment | Select-Object -Last 1
+PS> $fetchedMsg = $msg | Receive-Message # or use -Prefetch on Get-Message above
 PS> $fetchedMsg.Attachments[0].Save($location)
 ```
 
