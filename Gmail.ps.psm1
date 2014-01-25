@@ -631,7 +631,10 @@ function Save-Attachment {
         [string[]] $Path,
 
         [Parameter(ParameterSetName = "LiteralPath", Mandatory = $true)]
-        [string[]] $LiteralPath
+        [string[]] $LiteralPath,
+
+        [Parameter(Mandatory = $false)]
+        [switch] $PassThru
     )
 
     process {
@@ -652,10 +655,13 @@ function Save-Attachment {
 
                 if ($i -eq 0) {
                     $a.Save($fileDest)
-                    Get-ItemProperty $fileDest
                 } else {
                     $fileLoc = Join-Path ($paths[0] | Resolve-Path) $filename
-                    Copy-Item $fileLoc $fileDest -PassThru
+                    Copy-Item $fileLoc $fileDest
+                }
+
+                if ($PassThru) {
+                    Get-ItemProperty $fileDest
                 }
             }
         }
@@ -667,15 +673,18 @@ function Save-Attachment {
 .Description
     Downloads the attachments of a message to a local forlder.
 .Parameter Message
-    The message whose attachments will be downloaded
+    The message whose attachments will be downloaded.
 .Parameter Path
-    Specifies a path to the directory where the attachments will be saved
+    Specifies a path to the directory where the attachments will be saved.
 .Parameter LiteralPath
     Specifies a path to the directory where the attachments will be saved. The value of the LiteralPath parameter is used 
     exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in 
     single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.
+.Parameter PassThru
+    Returns a file representing each downloaded attachment. By default, this cmdlet does not generate any output.
 .Link
     Get-Message
+    Receive-Message
 #>
 }
 
