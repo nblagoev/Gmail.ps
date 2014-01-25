@@ -212,7 +212,7 @@ function Get-Message {
         [string]$Text,
         [string]$Body,
         [string]$Subject,
-        [string]$Label,
+        [string[]]$Label,
         [string]$FileName,
 
         [ValidateSet("Primary", "Personal", "Social", "Promotions", "Updates", "Forums")]
@@ -285,7 +285,7 @@ function Get-Message {
     }
     
     if ($Label) {
-        $xgm += 'label:' + $Label
+        $Label | ForEach-Object { $xgm += 'label:' + $_ }
     }
 
     if ($HasAttachment) {
@@ -380,7 +380,7 @@ function Get-Message {
 .Parameter Subject
     A substring to search the message's subject for
 .Parameter Label
-    Returns only messages having a particular label applied
+    Returns only messages having a particular set of labels applied
 .Parameter HasAttachment
     Returns only messages with attachments
 .Parameter FileName
