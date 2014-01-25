@@ -635,11 +635,17 @@ function Save-Attachment {
     )
 
     process {
-        foreach ($a in $Message.Attachments)
-        {
-            $p = Convert-Path ($Path + $LiteralPath)
-            $loc = Join-Path $p $Message.Uid
-            $a.Save((Join-Path $loc $a.Filename))
+         foreach ($destPath in ($LiteralPath + $Path | Where {$_})) {
+            if (!(Test-Path -Path $destPath -PathType Container)) {
+                New-Item -Path $destPath -ItemType Container | Out-Null
+            }
+            
+            foreach ($a in $Message.Attachments) {
+                $destPath = $destPath | Resolve-Path
+                $loc = Join-Path $destPath ($Message.Uid + "_" + $a.Filename)
+                $a.Save($loc)
+                Get-ItemProperty $loc
+            }
         }
     }
 
