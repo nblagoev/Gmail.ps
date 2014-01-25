@@ -82,9 +82,9 @@ function Invoke-GmailSession {
 .Synopsis
     Invokes a block of code on a Gmail session.
 .Description
-    Creates new Gmail session and passes it to a script block. Once the block is executed, the session is automatically closed.
+    Creates a new Gmail session and passes it to a script block. Once the block is executed, the session is automatically closed.
 .Parameter ScriptBlock
-    Script that is executed once a session is opened.
+    A script that is executed once the session is opened.
 .Parameter Credential
     The credentials that will be used to connect to Gmail.
 .Link
@@ -315,8 +315,8 @@ function Get-Message {
 
     $result = $Session.Search('(' + $criteria + ')');
     $i = 1
-    foreach ($item in $result)
-    {
+
+    foreach ($item in $result) {
         $msg = $Session.GetMessage($item, !$Prefetch, $false)
         AddSessionTo $msg $Session
         Write-Progress -Activity "Gathering messages" -Status "Progress: $($i)/$($result.Count)" -PercentComplete ($i / $result.Count * 100) -Id 90017
@@ -344,49 +344,49 @@ function Get-Message {
 .Parameter Session
     The opened session that will be manipulated.
 .Parameter Prefetch
-    If specified, fetches the message's body and attachments; otherwise only the headers are downloaded from the server
+    Fetches the message's body and attachments. By default only the headers are downloaded from the server.
 .Parameter Unread
-    Forces only unread messages to be returned
+    Forces only unread messages to be returned.
 .Parameter Read
-    Forces only read messages to be returned
+    Forces only read messages to be returned.
 .Parameter Answered
-    Forces only messages that has been answered to, to be returned
+    Forces only messages that has been answered to, to be returned.
 .Parameter Draft
-    If set, only drafts will be returned
+    If set, only drafts will be returned.
 .Parameter Undraft
-    If set, only non-draft messages will be returned
+    If set, only non-draft messages will be returned.
 .Parameter Starred
-    Indicates only starred mesages to be returned
+    Indicates only starred mesages to be returned.
 .Parameter Unstarred
-    Indicates only mesages that are not marked with Star to be returned
+    Indicates only messages that are not marked with Star to be returned.
 .Parameter On
-    Filters the messages based on an exact date of receiving 
+    Filters the messages based on an exact date of receiving.
 .Parameter After
-    Returns only messages received after a given date
+    Returns only messages received after a given date.
 .Parameter Before
-    Returns only messages received before a given date
+    Returns only messages received before a given date.
 .Parameter From
-    Filters the messages based on the sender's name and email address
+    Filters the messages based on the sender's name and email address.
 .Parameter To
-    Filters the messages based on the recipient's name and email address
+    Filters the messages based on the recipient's name and email address.
 .Parameter Cc
-    Filters the messages based on the Cc recipient's name and email address
+    Filters the messages based on the Cc recipient's name and email address.
 .Parameter Bcc
-    Filters the messages based on the Bcc recipient's name and email address
+    Filters the messages based on the Bcc recipient's name and email address.
 .Parameter Text
-    A text to search the entire message for
+    A text to search the entire message for.
 .Parameter Body
-    A substring to search the message's body for
+    A substring to search the message's body for.
 .Parameter Subject
-    A substring to search the message's subject for
+    A substring to search the message's subject for.
 .Parameter Label
-    Returns only messages having a particular set of labels applied
+    Returns only messages having a particular set of labels applied.
 .Parameter HasAttachment
-    Returns only messages with attachments
+    Returns only messages with attachments.
 .Parameter FileName
-    Returns only messages having attachments with a given name
+    Returns only messages having attachments with a given name.
 .Parameter Category
-    Returns only messages within a particular category
+    Returns only messages within a particular category.
 .Link
     Get-Message
 .Link
@@ -513,17 +513,17 @@ function Update-Message {
 .Parameter Message
     The message that will be updated.
 .Parameter Read
-    Marks a message as read
+    Marks a message as read.
 .Parameter Unread
-    Marks a message as undead
+    Marks a message as undead.
 .Parameter Star
-    Flags a message with a Star
+    Flags a message with a Star.
 .Parameter Unstar
-    Removes the star from a message
+    Removes the star from a message.
 .Parameter Archive
-    Archives a message
+    Archives a message.
 .Parameter Spam
-    Forces a message to be marked as spam
+    Forces a message to be marked as spam.
 .Link
     Get-Message
 .Link
@@ -671,7 +671,7 @@ function Save-Attachment {
 .Synopsis
     Downloads the attachments of a message.
 .Description
-    Downloads the attachments of a message to a local forlder.
+    Downloads the attachments of a message to a local folder.
 .Parameter Message
     The message whose attachments will be downloaded.
 .Parameter Path
@@ -681,9 +681,10 @@ function Save-Attachment {
     exactly as it is typed. No characters are interpreted as wildcards. If the path includes escape characters, enclose it in 
     single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.
 .Parameter PassThru
-    Returns a file representing each downloaded attachment. By default, this cmdlet does not generate any output.
+    Returns a file object representing each downloaded attachment. By default, this cmdlet does not generate any output.
 .Link
     Get-Message
+.Link
     Receive-Message
 #>
 }
@@ -725,7 +726,7 @@ function Get-Label {
 .Parameter Session
     The opened session that will be used to fetch all existing labels.
 .Parameter Message
-    The message whose labels will be returned
+    The message whose labels will be returned.
 .Link
     New-Label
 .Link
@@ -745,8 +746,7 @@ function New-Label {
         [AE.Net.Mail.ImapClient]$Session
     )
 
-    foreach ($item in $Name)
-    {
+    foreach ($item in $Name) {
         $Session.CreateMailbox($item)
     }
 
@@ -758,7 +758,7 @@ function New-Label {
 .Parameter Session
     The opened session that will be manipulated.
 .Parameter Name
-    The of the label that will be created.
+    The name of the label that will be created.
 .Link
     Get-Label
 .Link
@@ -781,8 +781,7 @@ function Remove-Label {
         [AE.Net.Mail.MailMessage]$Message
     )
 
-    foreach ($item in $Name)
-    {
+    foreach ($item in $Name) {
         if ($Message) {
             $Session.RemoveLabels($Name, @($Message))
         } else {
@@ -798,9 +797,10 @@ function Remove-Label {
 .Parameter Session
     The opened session that will be manipulated.
 .Parameter Name
-    The of the label that will be removed.
+    The name(s) of the label(s) that will be removed.
 .Parameter Message
-    The message from which the label will be removed; if not specified the label will be deleted from the account
+    The message from which the label(s) will be removed. If not specified the label(s) will be deleted from the account.
+    Note that all messages that have those labels applied will not be deleted.
 .Link
     Get-Label
 .Link
@@ -829,8 +829,7 @@ function Set-Label {
     process {
         $labels = $Session | Get-Label | ForEach-Object { $_.Name };
         
-        foreach ($label in $Name)
-        {
+        foreach ($label in $Name) {
             if (!$labels.Contains($label)) {
                 if ($Force) {
                     $Session | New-Label $label | Out-Null
@@ -856,10 +855,10 @@ function Set-Label {
 .Parameter Message
     The message to which the label will be applied.
 .Parameter Name
-    The name of the label that will be apllied.
+    The name(s) of the label(s) that will be apllied.
 .Parameter Force
     Forces the creation of the label if it doesn't exist. An error will be thrown if the 
-    label doesn't exist and the command is executed without the -Force parameter
+    label doesn't exist and the command is executed without the -Force parameter.
 .Link
     Get-Label
 .Link
