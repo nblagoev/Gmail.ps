@@ -4,9 +4,39 @@ A PowerShell module for managing your Gmail, with all the tools you'll need. Sea
 read and send emails, archive, mark as read/unread, delete emails, 
 and manage labels.
 
-__This module is still under development.__
+**This module is still under development.**
 
-## Installation
+## Table of contents
+
+* [Install](#install)
+* [Features](#features)
+* [Get help](#get-help)
+* [Commands](#commands)
+	* [New-GmailSession](#New-GmailSession)
+	* [Remove-GmailSession](#Remove-GmailSession)
+	* [Invoke-GmailSession](#Invoke-GmailSession)
+	* [Get-GmailSession](#Get-GmailSession)
+	* [Clear-GmailSession](#Clear-GmailSession)
+	* [Get-Mailbox](#Get-Mailbox)
+	* [Get-Message](#Get-Message)
+	* [Update-Message](#Update-Message)
+	* [Receive-Message](#Receive-Message)
+	* [Move-Message](#Move-Message)
+	* [Remove-Message](#Remove-Message)
+	* [Measure-Message](#Measure-Message)
+	* [Save-Attachment](#Save-Attachment)
+	* [Get-Label](#Get-Label)
+	* [New-Label](#New-Label)
+	* [Set-Label](#Set-Label)
+	* [Remove-Label](#Remove-Label)
+* [Roadmap](#roadmap)
+* [History](#history)
+* [Author](#author)
+* [Third Party Libraries](#third-party-libraries)
+* [Contributing](#contributing)
+* [License](#license)
+
+## Install
 
 If you have [PsGet](http://psget.net/) installed you can simply execute:
 
@@ -29,178 +59,564 @@ Or install it manually:
 * Move between labels/mailboxes
 * Automatic authentication, using the Windows Credential Manager
 
-## Usage:
+## Get help
 
-### Authenticating Gmail sessions
+* List of all available commands
 
-To authenticate a Gmail session, use `New-GmailSession` and provide your username and password. 
-If you want to be automatically logged in to your account, create a generic credential using the Windows Credential Manager: 
-go to 'Control Panel\User Accounts and Family Safety\Credential Manager', click 'Add a generic credential', then type your
-Gmail username and password, and use `Gmail.ps:default` as address. 
+    ```powershell
+	Get-Command -Module Gmail.ps
+    ```
 
-```powershell
-PS> $gmail = New-GmailSession
-PS> # play with your gmail...
-PS> $gmail | Remove-GmailSession
-```
+* Help for a specific command.
 
-If you use `Invoke-GmailSession` and pass a block, the session will be passed into the block, 
-and will be logged out after it's executed. Use `$args` to access the session or parameterize the block: 
+    ```powershell
+	Get-Help <command>
+    ```
 
-```powershell
-PS> Invoke-GmailSession -ScriptBlock {
->>      param($gmail) # to use $gmail instead of $args
->>      $gmail | Get-Label
->>  }
-```
+## Commands
 
-You can also check which accounts are logged in at any time using `Get-GmailSession` or close all of them with `Clear-GmailSession`.
+***For more detailed information about a command use the help.***
 
-### Gathering emails
-    
-Get the messages in the inbox:
+### New-GmailSession
+
+Opens a connection to a Gmail account using the specified credentials and creates a new session. If a generic credential is 
+created using the Windows Credential Manager (address: `Gmail.ps:default`), a session is automatically created using the 
+stored credentials each time the cmdlet is executed without a -Credential parameter.
 
 ```powershell
-PS> $inbox = $gmail | Get-Mailbox
-PS> $inbox | Get-Message -Unread
+New-GmailSession [[-Credential] <PSCredential>] [<CommonParameters>]
 ```
 
-Get the messages marked as Important by Gmail:
+#### Parameters
+
+Name          | Pipeline input | Default
+---           | ---            | ---
+`-Credential` | No             | `Get-StoredCredential Gmail.ps:default` or `Get-Credential`
+
+#### Examples
+
+1. Authenticating a Gmail session using the stored credential in the `Gmail.ps:default` entry. 
+   If there is no credential stored a prompt for username and password will be displayed.
+
+    ```powershell
+	$gmail = New-GmailSession
+	# play with your gmail...
+    ```
+
+### Remove-GmailSession
+
+Closes the connection to Gmail and destroys the session.
 
 ```powershell
-PS> $gmail | Get-Mailbox "Important" | Get-Message
+Remove-GmailSession [-Session] <ImapClient> [<CommonParameters>]
 ```
 
-With `Get-Mailbox` you can access the `"All Mail"`, `"Starred"`, `"Drafts"`, `"Important"`, `"Sent Mail"` and `"Spam"` folders
+#### Parameters
 
-Filter with some criteria:
+Name       | Pipeline input
+---        | ---
+`-Session` | ByValue, ByPropertyName
+
+#### Examples
+
+1. Closing an already opened connection to a Gmail account:
+
+    ```powershell
+	$gmail | Remove-GmailSession
+    ```
+
+### Invoke-GmailSession
+
+Creates a new Gmail session and passes it to a script block. Once the block is executed, the session is automatically closed.
 
 ```powershell
-PS> $inbox | Get-Message -After "2011-06-01" -Before "2012-01-01"
-PS> $inbox | Get-Message -On "2011-06-01"
-PS> $inbox | Get-Message -From "x@gmail.com"
-PS> $inbox | Get-Message -To "y@gmail.com"
+Invoke-GmailSession [[-Credential] <PSCredential>] [-ScriptBlock] <ScriptBlock> [<CommonParameters>]
 ```
 
-Combine flags and options:
+#### Parameters
+
+Name           | Pipeline input | Default
+---            | ---            | ---
+`-Credential`  | No             | `Get-StoredCredential Gmail.ps:default` or `Get-Credential`
+`-ScriptBlock` | No             |
+
+#### Examples
+
+1. Creates a Gmail session, returns the number of messages in the Inbox and then closes the session.
+   The automatically created session can be accessed inside the script block via the $args variable.
+
+    ```powershell
+	Invoke-GmailSession -ScriptBlock {
+	    $args | Count-Message
+	}
+    ```
+
+2. Creates a Gmail session, returns all the labels used in that account and then closes the session.
+   The automatically created session can be accessed inside the script block via the $gmail variable.
+
+    ```powershell
+	Invoke-GmailSession -ScriptBlock {
+	    param($gmail)
+	    $gmail | Get-Label
+	}
+    ```
+
+### Get-GmailSession
+
+Returns a list of all opened Gmail sessions.
 
 ```powershell
-PS> $inbox | Get-Message -Unread -From "myboss@gmail.com"
+Get-GmailSession
 ```
 
-Browsing labeled emails is similar to working with the inbox.
+### Clear-GmailSession
+
+Closes all opened Gmail sessions.
 
 ```powershell
-PS> $gmail | Get-Mailbox -Label "Important"
+Clear-GmailSession
 ```
 
-You can count the messages too:
+### Get-Mailbox
+
+Returns the `Inbox` if no parameters are specified, an existing Label or one of the default 
+Gmail folders (`All Mail`, `Starred`, `Drafts`, `Important`, `Sent Mail`, `Spam`).
+
+> **Alias:** `Select-Mailbox`
 
 ```powershell
-PS> $inbox | Measure-Message
-PS> $inbox | Get-Message -Unread | Measure-Message
+Get-Mailbox -Session <ImapClient> [[-Name] <String>] [<CommonParameters>]
+
+Get-Mailbox -Session <ImapClient> [-Label <String>] [<CommonParameters>]
 ```
-    
-Also you can manipulate each message using block style. Remember that every message in a conversation/thread will come as a separate message.
+
+#### Parameters
+
+Name       | Pipeline input          | Default (List of possible values)
+---        | ---                     | ---
+`-Session` | ByValue, ByPropertyName |
+`-Name`    | ByPropertyName          | `Inbox` (`All Mail`, `Starred`, `Drafts`, `Important`, `Sent Mail`, `Spam`)
+`-Label`   | ByPropertyName          |
+
+#### Examples
+
+1. Get the messages in the inbox:
+
+    ```powershell
+	$inbox = $gmail | Get-Mailbox
+	$inbox | Get-Message -Unread
+    ```
+
+2. Get the messages marked as Important by Gmail:
+
+    ```powershell
+	$gmail | Get-Mailbox "Important" | Get-Message
+    ```
+
+### Get-Message
+
+Returns a (filtered) list of the messages inside a selected mailbox (see Get-Mailbox).
+
+Every listed message has a set of flags indicating the message's status and properties.
+
+Flag | Meaning
+---  | ---
+`u`  | Is unread
+`f`  | Is fetched
+`i`  | Is important
+`s`  | Is starred
+`a`  | Has attachment
+
+Any flag may be unset. An unset flag is the equivalent of "is not" and is represented as a "-" character.
+'--i-a' means the message is not Unread, is not Fetched, is Important, is not Starred and has atleast one attachment.
+
+Supports automatic name completion for the existing labels.
+
+> **Alias:** `Filter-Message`
 
 ```powershell
-PS> $messages = $inbox | Get-Message -Unread | Select-Object -Last 10
-PS> foreach ($msg in $messages) {
->>     $msg | Update-Message -Read # you can use -Unread, -Spam, -Star, -Unstar, -Archive too
->> }
+Get-Message [-Session] <ImapClient> 
+			[[-From] <String>] [[-To] <String>] 
+			[[-On] <DateTime>] [[-After] <DateTime>] [[-Before] <DateTime>] 
+			[[-Cc] <String>] [[-Bcc] <String>] 
+			[[-Subject] <String>] [[-Text] <String>] [[-Body] <String>] 
+			[[-Label] <String[]>] [[-FileName] <String>] [[-Category] <String>] 
+			[-Unread ] [-Read ] [-Starred ] [-Unstarred ] [-HasAttachment ] 
+			[-Answered ] [-Draft ] [-Undraft ] [-Prefetch ] [<CommonParameters>]
 ```
-    
-### Working with emails!
 
-Delete all emails from X:
+#### Parameters
+
+Name             | Pipeline input          | Default (List of possible values)
+---              | ---                     | ---
+`-Session`       | ByValue, ByPropertyName |
+`-From`          | No                      | 
+`-To`            | No                      |
+`-On`            | No                      |
+`-After`         | No                      |
+`-Before`        | No                      |
+`-Cc`            | No                      |
+`-Bcc`           | No                      |
+`-Subject`       | No                      |
+`-Text`          | No                      |
+`-Body`          | No                      |
+`-Label`         | No                      |
+`-FileName`      | No                      |
+`-Category`      | No                      | *none* (`Primary`, `Personal`, `Social`, `Promotions`, `Updates`, `Forums`)
+`-Unread`        | No                      |
+`-Read`          | No                      |
+`-Starred`       | No                      |
+`-Unstarred`     | No                      |
+`-HasAttachment` | No                      |
+`-Answered`      | No                      |
+`-Draft`         | No                      |
+`-Undraft`       | No                      |
+`-Prefetch`      | No                      |
+
+#### Examples
+
+1. Get the messages in the inbox:
+
+    ```powershell
+	$inbox = $gmail | Get-Mailbox
+	$inbox | Get-Message -Unread
+    ```
+
+2. Get the messages marked as Important by Gmail:
+
+    ```powershell
+	$gmail | Get-Mailbox "Important" | Get-Message
+    ```
+
+3. Filter with some criteria:
+
+    ```powershell
+	$inbox | Get-Message -After "2011-06-01" -Before "2012-01-01"
+	$inbox | Get-Message -On "2011-06-01"
+	$inbox | Get-Message -From "x@gmail.com"
+	$inbox | Get-Message -To "y@gmail.com"
+    ```
+
+4. Combine flags and options:
+
+    ```powershell
+	$inbox | Get-Message -Unread -From "myboss@gmail.com"
+    ```
+
+### Update-Message
+
+Archives, marks as spam, as read/undead or adds/removes a star from a given message.
 
 ```powershell
-PS> $inbox | Get-Message -From "x@gmail.com" | Remove-Message
+Update-Message -Session <ImapClient> -Message <MailMessage> [-Read ] [-Archive ] [-Spam ] [<CommonParameters>]
+
+Update-Message -Session <ImapClient> -Message <MailMessage> [-Unread ] [-Archive ] [-Spam ] [<CommonParameters>]
+
+Update-Message -Session <ImapClient> -Message <MailMessage> [-Archive ] [-Unstar ] [-Spam ] [<CommonParameters>]
+
+Update-Message -Session <ImapClient> -Message <MailMessage> [-Archive ] [-Star ] [-Spam ] [<CommonParameters>]
 ```
 
-Save all attachments in the "Important" label to a local folder. 
-Note that without the `-Prefetch` parameter, no attachments will be downloaded from the server:
+#### Parameters
+
+Name        | Pipeline input
+---         | ---
+`-Session`  | ByValue, ByPropertyName
+`-Message`  | ByValue
+`-Read `    | No
+`-Unread `  | No
+`-Archive ` | No
+`-Star `    | No
+`-Unstar `  | No
+`-Spam `    | No
+
+#### Examples
+
+1. Each message can be manipulated using block style. Remember that every message in a conversation/thread will come as a separate message.
+
+    ```powershell
+	$messages = $inbox | Get-Message -Unread | Select-Object -Last 10
+	foreach ($msg in $messages) {
+	    $msg | Update-Message -Read # you can use -Unread, -Spam, -Star, -Unstar, -Archive too
+	}
+    ```
+
+### Receive-Message
+
+Fetches the whole message from the server (including the body and the attachments).
 
 ```powershell
-PS> $gmail | Get-Mailbox -Label "Important" | Get-Message -Prefetch | Save-Attachment $folder
+Receive-Message [-Session] <ImapClient> [-Message] <MailMessage> [<CommonParameters>]
 ```
 
-Save just the first attachment from the newest unread email:
+#### Parameters
+
+Name       | Pipeline input
+---        | ---
+`-Session` | ByValue, ByPropertyName
+`-Message` | ByValue
+
+#### Examples
+
+1. To read the actual body of a message you have to first fetch it from the Gmail servers:
+
+    ```powershell
+	$msg = $inbox | Get-Message -From "x@gmail.com" | Receive-Message
+	$msg.Body # returns the body of the message
+    ```
+
+### Move-Message
+
+Moves a message to a different mailbox or label. Supports automatic name completion for the existing labels.
 
 ```powershell
-PS> $msg = $inbox | Get-Message -Unread -HasAttachment | Select-Object -Last 1
-PS> $fetchedMsg = $msg | Receive-Message # or use -Prefetch on Get-Message above
-PS> $fetchedMsg.Attachments[0].Save($location)
+Move-Message -Session <ImapClient> -Message <MailMessage> [-Mailbox] <String> [<CommonParameters>]
+
+Move-Message -Session <ImapClient> -Message <MailMessage> -Label <String> [<CommonParameters>]
 ```
 
-Get all labels applied to a message:
+#### Parameters
+
+Name       | Pipeline input
+---        | ---
+`-Session` | ByValue, ByPropertyName
+`-Message` | ByValue
+`-Mailbox` | No
+`-Label`   | No
+
+#### Examples
+
+1. Move the message to the `All Mail` mailbox:
+
+    ```powershell
+    $msg | Move-Message "All Mail"
+    ```
+
+2. Move the message to the `Test` label:
+
+    ```powershell
+	$msg | Move-Message -Label "Test"
+    ```
+
+### Remove-Message
+
+Sends a message to the Gmail's `Trash` folder.
 
 ```powershell
-PS> $msg | Get-Label
+Remove-Message [-Session] <ImapClient> [-Message] <MailMessage> [<CommonParameters>]
 ```
 
-Add a label to a message (or remove it):
+#### Parameters
+
+Name       | Pipeline input
+---        | ---
+`-Session` | ByValue, ByPropertyName
+`-Message` | ByValue
+
+#### Examples
+
+1. Delete all emails from X:
+
+    ```powershell
+	$inbox | Get-Message -From "x@gmail.com" | Remove-Message
+    ```
+
+### Measure-Message
+
+Returns the number of messages in a mailbox (supports labels too).
+
+> **Alias:** `Count-Message`
 
 ```powershell
-PS> $msg | Set-Label "Important"
-PS> $msg | Remove-Label "Important"
+Measure-Message [-Session] <ImapClient> [<CommonParameters>]
 ```
 
-You can apply multiple lables:
+#### Parameters
+
+Name       | Pipeline input
+---        | ---
+`-Session` | ByValue, ByPropertyName
+
+#### Examples
+
+1. Count the messages in the inbox:
+
+    ```powershell
+	$inbox | Measure-Message
+    ```
+
+2. Count the important messages:
+
+    ```powershell
+	$gmail | Get-Mailbox "Important" | Measure-Message
+    ```
+
+3. Note that `Measure-Message` will return the number of all messages in the selected mailbox, not the number of the returned messages (if any). To count the returned messages, use `Measure-Object`. For example if we have 2 unread and 98 read messages in the `Important` mailbox:
+
+    ```powershell
+    # returns 100, the number of messages in `Important`
+	$gmail | Get-Mailbox "Important" | Get-Message -Unread | Measure-Message
+
+	# returns 2, the number of unread messages in `Important`
+	$gmail | Get-Mailbox "Important" | Get-Message -Unread | Measure-Object
+    ```
+
+### Save-Attachment
+
+Downloads the attachments of a message to a local folder.
 
 ```powershell
-PS> $msg | Set-Label "Important","Banking"
+Save-Attachment [-Message <MailMessage>] [-Path] <String[]> [-PassThru ] [<CommonParameters>]
+
+Save-Attachment [-Message <MailMessage>] -LiteralPath <String[]> [-PassThru ] [<CommonParameters>]
 ```
 
-The example above will raise error when you don't have one of the specified labels. You can avoid this using:
+#### Parameters
+
+Name           | Pipeline input
+---            | ---
+`-Message`     | ByValue
+`-Path`        | No
+`-LiteralPath` | No
+`-PassThru`    | No
+
+#### Examples
+
+1. Save all attachments in the "Important" label to a local folder. 
+   Note that without the `-Prefetch` parameter, no attachments will be downloaded:
+
+    ```powershell
+	$gmail | Get-Mailbox -Label "Important" | Get-Message -Prefetch | Save-Attachment $folder
+    ```
+
+2. Save just the first attachment from the newest unread email:
+
+    ```powershell
+	$msg = $inbox | Get-Message -Unread -HasAttachment | Select-Object -Last 1
+    $fetchedMsg = $msg | Receive-Message # or use -Prefetch on Get-Message above
+    $fetchedMsg.Attachments[0].Save($location)
+    ```
+
+### Get-Label
+
+Returns the labels applied to a message or all labels that exist.Downloads the attachments of a message to a local folder.
 
 ```powershell
-PS> $msg | Set-Label "Important","Banking" -Force # If one of the labels does't exist, it will be automatically created now
+Get-Label -Session <ImapClient> [-Message <MailMessage>] [[-Like] <String>] [-All ] [<CommonParameters>]
 ```
 
-You can also move message to a label/mailbox:
+#### Parameters
+
+Name (Alias)      | Pipeline input
+---               | ---
+`-Session`        | ByValue, ByPropertyName
+`-Message`        | ByValue
+`-Like` (`-Name`) | No
+`-All`            | No
+
+#### Examples
+
+1. Get all labels applied to a message:
+
+    ```powershell
+	$msg | Get-Label
+    ```
+
+2. Get list of defined labels:
+
+    ```powershell
+	$gmail | Get-Label
+    ```
+
+3. Check if a label exists:
+
+    ```powershell
+	$gmail | Get-Label -Name "SomeLabel" # returns null if the label doesn't exist
+	```
+
+### New-Label
+
+Creates a new label.
 
 ```powershell
-PS> $msg | Move-Message -Label "Test"
-PS> $msg | Move-Message "All Mail"
+New-Label [-Name] <String[]> -Session <ImapClient> [<CommonParameters>]
 ```
 
-### Managing labels
+#### Parameters
 
-With the Gmail module you can also manage your labels. You can get list of defined labels:
+Name       | Pipeline input
+---        | ---
+`-Name`    | No
+`-Session` | ByValue, ByPropertyName
+
+### Set-Label
+
+Applies a label to a message. Supports automatic name completion for the existing labels.
+
+> **Alias:** `Add-Label`
 
 ```powershell
-PS> $gmail | Get-Label
+Set-Label -Session <ImapClient> -Message <MailMessage> [-Name] <String[]> [-Force ] [<CommonParameters>]
 ```
 
-Create new label:
+#### Parameters
+
+Name       | Pipeline input
+---        | ---
+`-Session` | ByValue, ByPropertyName
+`-Message` | ByValue
+`-Name`    | No
+`-Force`   | No
+
+#### Examples
+
+1. Apply a single or multiple lables:
+
+	```powershell
+	$msg | Set-Label "Important"
+	$msg | Set-Label "Important","Banking"
+	```
+
+2. The example above will raise error if one of the specified labels doesn't exist. To avoid that, label creation can be forced:
+
+    ```powershell
+	$msg | Set-Label "Important","Banking" -Force
+    ```
+
+### Remove-Label
+
+Removes a label from a message or deletes the label from the account. Supports automatic name completion for the existing labels.
 
 ```powershell
-PS> $gmail | New-Label -Name "MyLabel"
+Remove-Label [-Name] <String[]> -Session <ImapClient> [-Message <MailMessage>] [<CommonParameters>]
 ```
 
-Remove labels:
+#### Parameters
 
-```powershell
-PS> $gmail | Remove-Label -Name "MyLabel"
-```
-
-Or check if given label exists:
-
-```powershell
-PS> $gmail | Get-Label -Name "SomeLabel" # returns null if the label doesn't exist
-```
-
-Cmdlets that can take a label name as a parameter value (`Get-Message`, `Move-Message`, `Set-Label` and `Remove-Label`) support automatic completion:
-
-```powershell
-PS> $gmail | Remove-Label <tab> # use <tab> key to cycle through all existing labels
-```
+Name       | Pipeline input
+---        | ---
+`-Name`    | No
+`-Session` | ByValue, ByPropertyName
+`-Message` | ByValue
 
 ## Roadmap
+
 * Write tests
 * Send mail via Google's SMTP servers
 * Backup/restore all messages and labels
+
+## History
+
+Check [Release](https://github.com/nikoblag/Gmail.ps/releases) list.
+
+## Author
+
+* Nikolay Blagoev [https://github.com/nikoblag]
+
+## Third Party Libraries
+
+* [AE.Net.Mail](https://github.com/andyedinborough/aenetmail) library - Copyright (c) 2013 [Andy Edinborough](https://github.com/andyedinborough)
+* [Get-StoredCredential](https://gist.github.com/toburger/2947424) cmdlet - Copyright (c) 2012 [Tobias Burger](https://github.com/toburger)
 
 ## Contributing
 
@@ -211,14 +627,6 @@ PS> $gmail | Remove-Label <tab> # use <tab> key to cycle through all existing la
 5. Open a [Pull Request](https://github.com/nikoblag/Gmail.ps/compare/)
 6. Enjoy an ice cream and wait
 
-## Author
+## License
 
-* Nikolay Blagoev [https://github.com/nikoblag]
-
-## Copyright
-
-* Copyright (c) 2013 Nikolay Blagoev
-* Copyright (c) 2013 Andy Edinborough - AE.Net.Mail library
-* Copyright (c) 2012 Tobias Burger - Get-StoredCredential cmdlet
-
-See LICENSE for details.
+[MIT License](https://github.com/nikoblag/Gmail.ps/blob/master/LICENSE)
