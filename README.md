@@ -12,23 +12,23 @@ and manage labels.
 * [Features](#features)
 * [Get help](#get-help)
 * [Commands](#commands)
-	* [New-GmailSession](#New-GmailSession)
-	* [Remove-GmailSession](#Remove-GmailSession)
-	* [Invoke-GmailSession](#Invoke-GmailSession)
-	* [Get-GmailSession](#Get-GmailSession)
-	* [Clear-GmailSession](#Clear-GmailSession)
-	* [Get-Mailbox](#Get-Mailbox)
-	* [Get-Message](#Get-Message)
-	* [Update-Message](#Update-Message)
-	* [Receive-Message](#Receive-Message)
-	* [Move-Message](#Move-Message)
-	* [Remove-Message](#Remove-Message)
-	* [Measure-Message](#Measure-Message)
-	* [Save-Attachment](#Save-Attachment)
-	* [Get-Label](#Get-Label)
-	* [New-Label](#New-Label)
-	* [Set-Label](#Set-Label)
-	* [Remove-Label](#Remove-Label)
+	* [New-GmailSession](#new-gmailsession)
+	* [Remove-GmailSession](#remove-gmailsession)
+	* [Invoke-GmailSession](#invoke-gmailsession)
+	* [Get-GmailSession](#get-gmailsession)
+	* [Clear-GmailSession](#clear-gmailsession)
+	* [Get-Mailbox](#get-mailbox)
+	* [Get-Message](#get-message)
+	* [Update-Message](#update-message)
+	* [Receive-Message](#receive-message)
+	* [Move-Message](#move-message)
+	* [Remove-Message](#remove-message)
+	* [Measure-Message](#measure-message)
+	* [Save-Attachment](#save-attachment)
+	* [Get-Label](#get-label)
+	* [New-Label](#new-label)
+	* [Set-Label](#set-label)
+	* [Remove-Label](#remove-label)
 * [Roadmap](#roadmap)
 * [History](#history)
 * [Author](#author)
@@ -227,8 +227,8 @@ Flag | Meaning
 `s`  | Is starred
 `a`  | Has attachment
 
-Any flag may be unset. An unset flag is the equivalent of "is not" and is represented as a "-" character.
-'--i-a' means the message is not Unread, is not Fetched, is Important, is not Starred and has atleast one attachment.
+Any flag may be unset. An unset flag is the equivalent of "is not" and is represented as a `-` character.
+`--i-a` means the message is not Unread, is not Fetched, is Important, is not Starred and has atleast one attachment.
 
 Supports automatic name completion for the existing labels.
 
