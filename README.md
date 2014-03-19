@@ -81,7 +81,7 @@ Or install it manually:
 
 Opens a connection to a Gmail account using the specified credentials and creates a new session. If a generic credential is 
 created using the Windows Credential Manager (address: `Gmail.ps:default`), a session is automatically created using the 
-stored credentials each time the cmdlet is executed without a -Credential parameter.
+stored credentials each time the cmdlet is executed without a `-Credential` parameter.
 
 ```powershell
 New-GmailSession [[-Credential] <PSCredential>] [<CommonParameters>]
@@ -143,7 +143,7 @@ Name           | Pipeline input | Default
 #### Examples
 
 1. Creates a Gmail session, returns the number of messages in the Inbox and then closes the session.
-   The automatically created session can be accessed inside the script block via the $args variable.
+   The automatically created session can be accessed inside the script block via the `$args` variable.
 
     ```powershell
 	Invoke-GmailSession -ScriptBlock {
@@ -152,7 +152,7 @@ Name           | Pipeline input | Default
     ```
 
 2. Creates a Gmail session, returns all the labels used in that account and then closes the session.
-   The automatically created session can be accessed inside the script block via the $gmail variable.
+   The automatically created session can be accessed inside the script block via the `$gmail` variable.
 
     ```powershell
 	Invoke-GmailSession -ScriptBlock {
@@ -200,7 +200,7 @@ Name       | Pipeline input          | Default (List of possible values)
 
 #### Examples
 
-1. Get the messages in the inbox:
+1. Get the unread messages in the inbox:
 
     ```powershell
 	$inbox = $gmail | Get-Mailbox
@@ -215,7 +215,8 @@ Name       | Pipeline input          | Default (List of possible values)
 
 ### Get-Message
 
-Returns a (filtered) list of the messages inside a selected mailbox (see Get-Mailbox).
+Returns a (filtered) list of the messages inside a selected mailbox (see [`Get-Mailbox`](#get-mailbox)).
+The returned messages will have their body and attachments downloaded only if the `-Prefetch` parameter is specified. 
 
 Every listed message has a set of flags indicating the message's status and properties.
 
@@ -275,7 +276,7 @@ Name             | Pipeline input          | Default (List of possible values)
 
 #### Examples
 
-1. Get the messages in the inbox:
+1. Get the unread messages in the inbox:
 
     ```powershell
 	$inbox = $gmail | Get-Mailbox
@@ -305,7 +306,7 @@ Name             | Pipeline input          | Default (List of possible values)
 
 ### Update-Message
 
-Archives, marks as spam, as read/undead or adds/removes a star from a given message.
+Archives, marks as spam, as read/undead and adds/removes a star from a given message.
 
 ```powershell
 Update-Message -Session <ImapClient> -Message <MailMessage> [-Read ] [-Star ] [-Archive ] [-Spam ] [<CommonParameters>]
@@ -367,7 +368,9 @@ Name       | Pipeline input
 
 ### Move-Message
 
-Moves a message to a different mailbox or label. Supports automatic name completion for the existing labels.
+Moves a message to a different mailbox or label. 
+
+Supports automatic name completion for the existing labels.
 
 ```powershell
 Move-Message -Session <ImapClient> -Message <MailMessage> [-Mailbox] <String> [<CommonParameters>]
@@ -499,7 +502,7 @@ Name           | Pipeline input
 
 ### Get-Label
 
-Returns the labels applied to a message or all labels that exist.Downloads the attachments of a message to a local folder.
+Returns the labels applied to a message or all labels that exist.
 
 ```powershell
 Get-Label -Session <ImapClient> [-Message <MailMessage>] [[-Like] <String>] [-All ] [<CommonParameters>]
@@ -522,7 +525,7 @@ Name (Alias)      | Pipeline input
 	$msg | Get-Label
     ```
 
-2. Get list of defined labels:
+2. Get a list of the defined labels:
 
     ```powershell
 	$gmail | Get-Label
@@ -570,7 +573,7 @@ Name       | Pipeline input
 
 #### Examples
 
-1. Apply a single or multiple lables:
+1. Apply a single or multiple labels:
 
 	```powershell
 	$msg | Set-Label "Important"
@@ -585,7 +588,9 @@ Name       | Pipeline input
 
 ### Remove-Label
 
-Removes a label from a message or deletes the label from the account. Supports automatic name completion for the existing labels.
+Removes a label from a message or deletes the label from the account.
+
+Supports automatic name completion for the existing labels.
 
 ```powershell
 Remove-Label [-Name] <String[]> -Session <ImapClient> [-Message <MailMessage>] [<CommonParameters>]

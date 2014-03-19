@@ -26,6 +26,14 @@ function New-GmailSession {
     stored credentials each time the cmdlet is executed without a -Credential parameter.
 .Parameter Credential
     The credentials that will be used to connect to Gmail.
+.Example
+    PS> $gmail = New-GmailSession
+    PS> # play with your gmail...
+
+    Description
+    -----------
+    Authenticating a Gmail session using the stored credential in the Gmail.ps:default entry. 
+    If there is no credential stored a prompt for username and password will be displayed.
 .Link
     Remove-GmailSession
 .Link
@@ -53,6 +61,12 @@ function Remove-GmailSession {
     Closes the connection to Gmail and destroys the session.
 .Parameter Credential
     The credentials that will be used to connect to Gmail.
+.Example
+    PS> $gmail | Remove-GmailSession
+
+    Description
+    -----------
+    Closing an already opened connection to a Gmail account.
 .Link
     New-GmailSession
 .Link
@@ -180,6 +194,19 @@ function Get-Mailbox {
     The name of the default Gmail folder to be accessed.
 .Parameter Label
     The name of an existing label to be accessed.
+.Example
+    PS> $inbox = $gmail | Get-Mailbox
+    PS> $inbox | Get-Message -Unread
+
+    Description
+    -----------
+    Get the unread messages in the inbox.
+.Example
+    PS> $gmail | Get-Mailbox "Important" | Get-Message
+
+    Description
+    -----------
+    Get the messages marked as Important by Gmail.
 .Link
     Get-Message
 .Link
@@ -329,6 +356,7 @@ function Get-Message {
     Returns a list of messages.
 .Description
     Returns a (filtered) list of the messages inside a selected mailbox (see Get-Mailbox).
+    The returned messages will have their body and attachments downloaded only if the -Prefetch parameter is specified. 
 
     Every listed message has a set of flags indicating the message's status and properties.
 
@@ -342,6 +370,8 @@ function Get-Message {
 
     Any flag may be unset. An unset flag is the equivalent of "is not" and is represented as a "-" character.
     '--i-a' means the message is not Unread, is not Fetched, is Important, is not Starred and has atleast one attachment.
+
+    Supports automatic name completion for the existing labels.
 .Parameter Session
     The opened session that will be manipulated.
 .Parameter Prefetch
@@ -388,6 +418,34 @@ function Get-Message {
     Returns only messages having attachments with a given name.
 .Parameter Category
     Returns only messages within a particular category.
+.Example
+    PS> $inbox = $gmail | Get-Mailbox
+    PS> $inbox | Get-Message -Unread
+
+    Description
+    -----------
+    Get the unread messages in the inbox.
+.Example
+    PS> $gmail | Get-Mailbox "Important" | Get-Message
+
+    Description
+    -----------
+    Get the messages marked as Important by Gmail.
+.Example
+    PS> $inbox | Get-Message -After "2011-06-01" -Before "2012-01-01"
+    PS> $inbox | Get-Message -On "2011-06-01"
+    PS> $inbox | Get-Message -From "x@gmail.com"
+    PS> $inbox | Get-Message -To "y@gmail.com"
+
+    Description
+    -----------
+    Filter with some criteria.
+.Example
+    PS> $inbox | Get-Message -Unread -From "myboss@gmail.com"
+
+    Description
+    -----------
+    Combine flags and options.
 .Link
     Get-Message
 .Link
@@ -423,6 +481,12 @@ function Remove-Message {
     The opened session that will be manipulated.
 .Parameter Message
     The message that will be deleted.
+.Example
+    PS> $inbox | Get-Message -From "x@gmail.com" | Remove-Message
+
+    Description
+    -----------
+    Delete all emails from X.
 .Link
     Get-Message
 .Link
@@ -521,6 +585,16 @@ function Update-Message {
     Archives a message.
 .Parameter Spam
     Forces a message to be marked as spam.
+.Example
+    PS> $messages = $inbox | Get-Message -Unread | Select-Object -Last 10
+    PS> foreach ($msg in $messages) {
+    PS>     $msg | Update-Message -Read # you can use -Unread, -Spam, -Star, -Unstar, -Archive too
+    PS> }
+
+    Description
+    -----------
+    Each message can be manipulated using block style. Remember that 
+    every message in a conversation/thread will come as a separate message.
 .Link
     Get-Message
 .Link
@@ -551,6 +625,13 @@ function Receive-Message {
     The opened session that will be manipulated.
 .Parameter Message
     The message that will be fetched.
+.Example
+    PS> $msg = $inbox | Get-Message -From "x@gmail.com" | Receive-Message
+    PS> $msg.Body # returns the body of the message
+
+    Description
+    -----------
+    To read the actual body of a message you have to first fetch it from the Gmail servers.
 .Link
     Get-Message
 #>
@@ -584,6 +665,8 @@ function Move-Message {
     Moves a message.
 .Description
     Moves a message to a different mailbox or label.
+
+    Supports automatic name completion for the existing labels.
 .Parameter Session
     The opened session that will be manipulated.
 .Parameter Message
@@ -592,6 +675,18 @@ function Move-Message {
     The name of a mailbox the message will be moved to.
 .Parameter Label
     The name of a label the message will be moved to.
+.Example
+    PS> $msg | Move-Message "All Mail"
+
+    Description
+    -----------
+    Move the message to the All Mail mailbox.
+.Example
+    PS> $msg | Move-Message -Label "Test"
+
+    Description
+    -----------
+    Move the message to the Test label.
 .Link
     Get-Message
 #>
@@ -613,6 +708,30 @@ function Measure-Message {
     Returns the number of messages in a mailbox (supports labels too).
 .Parameter Session
     The opened session that will be manipulated.
+.Example
+    PS> $inbox | Measure-Message
+
+    Description
+    -----------
+    Count the messages in the inbox.
+.Example
+    PS> $gmail | Get-Mailbox "Important" | Measure-Message
+
+    Description
+    -----------
+    Count the important messages.
+.Example
+    PS> # returns 100, the number of messages in `Important`
+    PS> $gmail | Get-Mailbox "Important" | Get-Message -Unread | Measure-Message
+
+    PS> # returns 2, the number of unread messages in `Important`
+    PS> $gmail | Get-Mailbox "Important" | Get-Message -Unread | Measure-Object
+
+    Description
+    -----------
+    Note that Measure-Message will return the number of all messages in the selected mailbox, 
+    not the number of the returned messages (if any). To count the returned messages, use Measure-Object. 
+    In this example we have 2 unread and 98 read messages in the Important mailbox.
 .Link
     Get-Message
 #>
@@ -679,6 +798,21 @@ function Save-Attachment {
     single quotation marks. Single quotation marks tell Windows PowerShell not to interpret any characters as escape sequences.
 .Parameter PassThru
     Returns a file object representing each downloaded attachment. By default, this cmdlet does not generate any output.
+.Example
+    PS> $gmail | Get-Mailbox -Label "Important" | Get-Message -Prefetch | Save-Attachment $folder
+
+    Description
+    -----------
+    Save all attachments in the "Important" label to a local folder. 
+    Note that without the -Prefetch parameter, no attachments will be downloaded.
+.Example
+    PS> $msg = $inbox | Get-Message -Unread -HasAttachment | Select-Object -Last 1
+    PS> $fetchedMsg = $msg | Receive-Message # or use -Prefetch on Get-Message above
+    PS> $fetchedMsg.Attachments[0].Save($location)
+
+    Description
+    -----------
+    Save just the first attachment from the newest unread email.
 .Link
     Get-Message
 .Link
@@ -724,6 +858,24 @@ function Get-Label {
     The opened session that will be used to fetch all existing labels.
 .Parameter Message
     The message whose labels will be returned.
+.Example
+    PS> $msg | Get-Label
+
+    Description
+    -----------
+    Get all labels applied to a message.
+.Example
+    PS> $gmail | Get-Label
+
+    Description
+    -----------
+    Get a list of the defined labels.
+.Example
+    PS> $gmail | Get-Label -Name "SomeLabel" # returns null if the label doesn't exist
+
+    Description
+    -----------
+    Check if a label exists.
 .Link
     New-Label
 .Link
@@ -791,6 +943,8 @@ function Remove-Label {
     Removes a label from a message or deletes the label from the account.
 .Description
     Removes a label from a message or deletes the label from the account.
+
+    Supports automatic name completion for the existing labels.
 .Parameter Session
     The opened session that will be manipulated.
 .Parameter Name
@@ -856,6 +1010,19 @@ function Set-Label {
 .Parameter Force
     Forces the creation of the label if it doesn't exist. An error will be thrown if the 
     label doesn't exist and the command is executed without the -Force parameter.
+.Example
+    PS> $msg | Set-Label "Important"
+    PS> $msg | Set-Label "Important","Banking"
+
+    Description
+    -----------
+    Apply a single or multiple labels.
+.Example
+    PS> $msg | Set-Label "Important","Banking" -Force
+
+    Description
+    -----------
+    The first example will raise error if one of the specified labels doesn't exist. To avoid that, label creation can be forced.
 .Link
     Get-Label
 .Link
