@@ -23,7 +23,7 @@ function New-GmailSession {
 .Description
     Opens a connection to a Gmail account using the specified credentials and creates a new session. If a generic credential is 
     created using the Windows Credential Manager (address: 'Gmail.ps:default'), a session is automatically created using the 
-    stored credentials each time the cmdlet is executed without a -Credential parameter
+    stored credentials each time the cmdlet is executed without a -Credential parameter.
 .Parameter Credential
     The credentials that will be used to connect to Gmail.
 .Link
@@ -67,11 +67,11 @@ function Remove-GmailSession {
 function Invoke-GmailSession {
     [CmdletBinding()]
     param (
-        [Parameter(Position = 1, Mandatory = $true)]
-        [ScriptBlock]$ScriptBlock,
-
         [Parameter(Position = 0, Mandatory = $false)]
-        [System.Management.Automation.PSCredential]$Credential = $($cr = (Get-StoredCredential Gmail.ps:default); if ($cr -eq $null) {Get-Credential} else {$cr})
+        [System.Management.Automation.PSCredential]$Credential = $($cr = (Get-StoredCredential Gmail.ps:default); if ($cr -eq $null) {Get-Credential} else {$cr}),
+
+        [Parameter(Position = 1, Mandatory = $true)]
+        [ScriptBlock]$ScriptBlock
     )
 
     $gmail = New-GmailSession -Credential $Credential
@@ -173,7 +173,7 @@ function Get-Mailbox {
     Returns a mailbox.
 .Description
     Returns the Inbox if no parameters are specified, an existing Label or one of the default 
-    Gmail folders (All Mail, Starred, Drafts, Important, Sent Mail, Spam)
+    Gmail folders (All Mail, Starred, Drafts, Important, Sent Mail, Spam).
 .Parameter Session
     The opened session that will be manipulated.
 .Parameter Name
@@ -193,30 +193,31 @@ function Get-Message {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [AE.Net.Mail.ImapClient]$Session,
 
-        [switch]$Prefetch,
-        [switch]$Unread,
-        [switch]$Read,
-        [switch]$Answered,
-        [switch]$Draft,
-        [switch]$Undraft,
-        [switch]$Starred,
-        [switch]$Unstarred,
-        [switch]$HasAttachment,
+        [string]$From,
+        [string]$To,
         [DateTime]$On,
         [DateTime]$After,
         [DateTime]$Before,
-        [string]$From,
-        [string]$To,
         [string]$Cc,
         [string]$Bcc,
+        [string]$Subject,
         [string]$Text,
         [string]$Body,
-        [string]$Subject,
         [string[]]$Label,
         [string]$FileName,
 
         [ValidateSet("Primary", "Personal", "Social", "Promotions", "Updates", "Forums")]
-        [string]$Category
+        [string]$Category,
+
+        [switch]$Unread,
+        [switch]$Read,
+        [switch]$Starred,
+        [switch]$Unstarred,
+        [switch]$HasAttachment,
+        [switch]$Answered,
+        [switch]$Draft,
+        [switch]$Undraft,
+        [switch]$Prefetch
     )
 
     $imap = @()
@@ -437,28 +438,24 @@ function Update-Message {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AE.Net.Mail.MailMessage]$Message,
 
-        [Parameter(ParameterSetName = "Seen")]
+        [Parameter(ParameterSetName = "Seen_Unflagged")]
+        [Parameter(ParameterSetName = "Seen_Flagged")]
         [switch]$Read,
 
-        [Parameter(ParameterSetName = "Unseen")]
+        [Parameter(ParameterSetName = "Unseen_Unflagged")]
+        [Parameter(ParameterSetName = "Unseen_Flagged")]
         [switch]$Unread,
 
-        [Parameter(ParameterSetName = "Unseen")]
-        [Parameter(ParameterSetName = "Seen")]
-        [Parameter(ParameterSetName = "Flagged")]
-        [Parameter(ParameterSetName = "Unflagged")]
-        [switch]$Archive,
-
-        [Parameter(ParameterSetName = "Flagged")]
+        [Parameter(ParameterSetName = "Unseen_Flagged")]
+        [Parameter(ParameterSetName = "Seen_Flagged")]
         [switch]$Star,
 
-        [Parameter(ParameterSetName = "Unflagged")]
+        [Parameter(ParameterSetName = "Unseen_Unflagged")]
+        [Parameter(ParameterSetName = "Seen_Unflagged")]
         [switch]$Unstar,
+
+        [switch]$Archive,
         
-        [Parameter(ParameterSetName = "Unseen")]
-        [Parameter(ParameterSetName = "Seen")]
-        [Parameter(ParameterSetName = "Flagged")]
-        [Parameter(ParameterSetName = "Unflagged")]
         [switch]$Spam
     )
     
@@ -586,7 +583,7 @@ function Move-Message {
 .Synopsis
     Moves a message.
 .Description
-    Moves a message to a different mailbox or label
+    Moves a message to a different mailbox or label.
 .Parameter Session
     The opened session that will be manipulated.
 .Parameter Message
@@ -847,9 +844,9 @@ function Set-Label {
 
 <#
 .Synopsis
-   Adds a label to a message.
+   Applies a label to a message.
 .Description
-   Adds a label to a message.
+   Applies a label to a message.
 .Parameter Session
     The opened session that will be manipulated.
 .Parameter Message

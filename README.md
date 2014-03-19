@@ -308,13 +308,13 @@ Name             | Pipeline input          | Default (List of possible values)
 Archives, marks as spam, as read/undead or adds/removes a star from a given message.
 
 ```powershell
-Update-Message -Session <ImapClient> -Message <MailMessage> [-Read ] [-Archive ] [-Spam ] [<CommonParameters>]
+Update-Message -Session <ImapClient> -Message <MailMessage> [-Read ] [-Star ] [-Archive ] [-Spam ] [<CommonParameters>]
 
-Update-Message -Session <ImapClient> -Message <MailMessage> [-Unread ] [-Archive ] [-Spam ] [<CommonParameters>]
+Update-Message -Session <ImapClient> -Message <MailMessage> [-Read ] [-Unstar ] [-Archive ] [-Spam ] [<CommonParameters>]
 
-Update-Message -Session <ImapClient> -Message <MailMessage> [-Archive ] [-Unstar ] [-Spam ] [<CommonParameters>]
+Update-Message -Session <ImapClient> -Message <MailMessage> [-Unread ] [-Star ] [-Archive ] [-Spam ] [<CommonParameters>]
 
-Update-Message -Session <ImapClient> -Message <MailMessage> [-Archive ] [-Star ] [-Spam ] [<CommonParameters>]
+Update-Message -Session <ImapClient> -Message <MailMessage> [-Unread ] [-Unstar ] [-Archive ] [-Spam ] [<CommonParameters>]
 ```
 
 #### Parameters
