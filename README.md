@@ -24,6 +24,7 @@ and manage labels.
 	* [Move-Message](#move-message)
 	* [Remove-Message](#remove-message)
 	* [Measure-Message](#measure-message)
+	* [Get-Conversation](#get-conversation)
 	* [Save-Attachment](#save-attachment)
 	* [Get-Label](#get-label)
 	* [New-Label](#new-label)
@@ -464,6 +465,40 @@ Name       | Pipeline input
 	$gmail | Get-Mailbox "Important" | Get-Message -Unread | Measure-Object
     ```
 
+### Get-Conversation
+
+Returns a list of messages that are part of a conversation.
+
+> **Alias:** `Get-Thread`
+
+```powershell
+Get-Conversation [-Session] <ImapClient> [-Message] <MailMessage> [-Prefetch] [<CommonParameters>]
+```
+
+#### Parameters
+
+Name        | Pipeline input
+---         | ---
+`-Session`  | ByValue, ByPropertyName
+`-Message`  | ByValue
+`-Prefetch` | No
+
+#### Examples
+
+1. Search the Inbox based on the message returned by Get-Message, 
+   and return all messages that are part of that conversaton and are in the Inbox:
+
+    ```powershell
+	$gmail | Get-Mailbox Inbox | Get-Message -From z@gmail.com | Get-Conversaion
+    ```
+
+2. Search "All Mail" based on the message returned by Get-Message, 
+   and return all messages that are part of that conversaton:
+
+    ```powershell
+	$gmail | Get-Mailbox "All Mail" | Get-Message -From z@gmail.com | Get-Conversaion
+    ```
+
 ### Save-Attachment
 
 Downloads the attachments of a message to a local folder.
@@ -554,7 +589,9 @@ Name       | Pipeline input
 
 ### Set-Label
 
-Applies a label to a message. Supports automatic name completion for the existing labels.
+Applies a label to a message.
+
+Supports automatic name completion for the existing labels.
 
 > **Alias:** `Add-Label`
 

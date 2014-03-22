@@ -737,6 +737,63 @@ function Measure-Message {
 #>
 }
 
+function Get-Conversation {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [AE.Net.Mail.ImapClient]$Session,
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+        [AE.Net.Mail.MailMessage]$Message,
+
+        [switch]$Prefetch
+    )
+
+    process {
+        $thrid = $Message.Headers["X-GM-THRID"].Value
+        $result = $Session.Search('(X-GM-THRID ' + $thrid + ')')
+        $i = 1
+
+        foreach ($item in $result) {
+            $msg = $Session.GetMessage($item, !$Prefetch, $false)
+            AddSessionTo $msg $Session
+            Write-Progress -Activity "Gathering messages within a conversation" -Status "Progress: $($i)/$($result.Count)" -PercentComplete ($i / $result.Count * 100) -Id 90018
+            $i += 1
+        }
+    }
+
+<#
+.Synopsis
+    Returns a list of messages that are part of a conversation.
+.Description
+    Returns a list of messages that are part of a conversation.
+.Parameter Session
+    The opened session that will be manipulated.
+.Parameter Message
+    A message that is part of the wanted conversation.
+.Parameter Prefetch
+    Fetches the conversation's bodies and attachments. By default only the headers are downloaded from the server.
+.Example
+    PS> $gmail | Get-Mailbox Inbox | Get-Message -From z@gmail.com | Get-Conversaion
+
+    Description
+    -----------
+    Searches the Inbox based on the message returned by Get-Message, 
+    and returns all messages that are part of that conversaton and are in the Inbox.
+.Example
+    PS> $gmail | Get-Mailbox "All Mail" | Get-Message -From z@gmail.com | Get-Conversaion
+
+    Description
+    -----------
+    Searches "All Mail" based on the message returned by Get-Message, 
+    and returns all messages that are part of that conversaton.
+.Link
+    Get-Message
+.Link
+    Get-Mailbox
+#>
+}
+
 function Save-Attachment {
     [CmdletBinding(DefaultParameterSetName = "Path")]
     param (
@@ -1257,9 +1314,10 @@ New-Alias -Name Select-Mailbox -Value Get-Mailbox
 New-Alias -Name Filter-Message -Value Get-Message
 New-Alias -Name Count-Message -Value Measure-Message
 New-Alias -Name Add-Label -Value Set-Label
+New-Alias -Name Get-Thread -Value Get-Conversation
 
 Export-ModuleMember -Alias * -Function New-GmailSession, Remove-GmailSession, Invoke-GmailSession, 
                                        Get-GmailSession, Clear-GmailSession, Get-Mailbox, Get-Message, 
                                        Measure-Message, Remove-Message, Update-Message, Move-Message, 
                                        Get-Label, New-Label, Remove-Label, Set-Label, Receive-Message, 
-                                       Save-Attachment
+                                       Save-Attachment, Get-Conversation
