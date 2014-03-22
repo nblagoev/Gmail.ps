@@ -485,18 +485,18 @@ Name        | Pipeline input
 
 #### Examples
 
-1. Search the Inbox based on the message returned by Get-Message, 
+1. Search the Inbox based on the message returned by [`Get-Message`](#get-message), 
    and return all messages that are part of that conversaton and are in the Inbox:
 
     ```powershell
-	$gmail | Get-Mailbox Inbox | Get-Message -From z@gmail.com | Get-Conversaion
+	$gmail | Get-Mailbox "Inbox" | Get-Message -From "z@gmail.com" | Get-Conversaion
     ```
 
-2. Search "All Mail" based on the message returned by Get-Message, 
+2. Search "All Mail" based on the message returned by [`Get-Message`](#get-message), 
    and return all messages that are part of that conversaton:
 
     ```powershell
-	$gmail | Get-Mailbox "All Mail" | Get-Message -From z@gmail.com | Get-Conversaion
+	$gmail | Get-Mailbox "All Mail" | Get-Message -From "z@gmail.com" | Get-Conversaion
     ```
 
 ### Save-Attachment
