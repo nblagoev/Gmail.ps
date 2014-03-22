@@ -48,7 +48,44 @@ and manage labels.</p>
 <p><strong>This module is still under development.</strong></p>
 
 <h2>
-<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+<a name="table-of-contents" class="anchor" href="#table-of-contents"><span class="octicon octicon-link"></span></a>Table of contents</h2>
+
+<ul>
+<li><a href="#install">Install</a></li>
+<li><a href="#features">Features</a></li>
+<li><a href="#get-help">Get help</a></li>
+<li>
+<a href="#commands">Commands</a>
+
+<ul>
+<li><a href="#new-gmailsession">New-GmailSession</a></li>
+<li><a href="#remove-gmailsession">Remove-GmailSession</a></li>
+<li><a href="#invoke-gmailsession">Invoke-GmailSession</a></li>
+<li><a href="#get-gmailsession">Get-GmailSession</a></li>
+<li><a href="#clear-gmailsession">Clear-GmailSession</a></li>
+<li><a href="#get-mailbox">Get-Mailbox</a></li>
+<li><a href="#get-message">Get-Message</a></li>
+<li><a href="#update-message">Update-Message</a></li>
+<li><a href="#receive-message">Receive-Message</a></li>
+<li><a href="#move-message">Move-Message</a></li>
+<li><a href="#remove-message">Remove-Message</a></li>
+<li><a href="#measure-message">Measure-Message</a></li>
+<li><a href="#get-conversation">Get-Conversation</a></li>
+<li><a href="#save-attachment">Save-Attachment</a></li>
+<li><a href="#get-label">Get-Label</a></li>
+<li><a href="#new-label">New-Label</a></li>
+<li><a href="#set-label">Set-Label</a></li>
+<li><a href="#remove-label">Remove-Label</a></li>
+</ul>
+</li>
+<li><a href="#roadmap">Roadmap</a></li>
+<li><a href="#history">History</a></li>
+<li><a href="#author">Author</a></li>
+<li><a href="#third-party-libraries">Third Party Libraries</a></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#license">License</a></li>
+</ul><h2>
+<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
 
 <p>If you have <a href="http://psget.net/">PsGet</a> installed you can simply execute:</p>
 
@@ -73,163 +110,988 @@ cd Gmail.ps
 <li>Move between labels/mailboxes</li>
 <li>Automatic authentication, using the Windows Credential Manager</li>
 </ul><h2>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage:</h2>
+<a name="get-help" class="anchor" href="#get-help"><span class="octicon octicon-link"></span></a>Get help</h2>
+
+<ul>
+<li>
+<p>List of all available commands</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Get-Command</span> <span class="n">-Module</span> <span class="n">Gmail</span><span class="p">.</span><span class="n">ps</span>
+</pre></div>
+</li>
+<li>
+<p>Help for a specific command.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Get-Help</span> <span class="p">&lt;</span><span class="n">command</span><span class="p">&gt;</span>
+</pre></div>
+</li>
+</ul><h2>
+<a name="commands" class="anchor" href="#commands"><span class="octicon octicon-link"></span></a>Commands</h2>
+
+<p><strong><em>For more detailed information about a command use the help.</em></strong></p>
 
 <h3>
-<a name="authenticating-gmail-sessions" class="anchor" href="#authenticating-gmail-sessions"><span class="octicon octicon-link"></span></a>Authenticating Gmail sessions</h3>
+<a name="new-gmailsession" class="anchor" href="#new-gmailsession"><span class="octicon octicon-link"></span></a>New-GmailSession</h3>
 
-<p>To authenticate a Gmail session, use <code>New-GmailSession</code> and provide your username and password. 
-If you want to be automatically logged in to your account, create a generic credential using the Windows Credential Manager: 
-go to 'Control Panel\User Accounts and Family Safety\Credential Manager', click 'Add a generic credential', then type your
-Gmail username and password, and use <code>Gmail.ps:default</code> as address. </p>
+<p>Opens a connection to a Gmail account using the specified credentials and creates a new session. If a generic credential is 
+created using the Windows Credential Manager (address: <code>Gmail.ps:default</code>), a session is automatically created using the 
+stored credentials each time the cmdlet is executed without a <code>-Credential</code> parameter.</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$gmail</span> <span class="p">=</span> <span class="nb">New-GmailSession</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="c"># play with your gmail...</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Remove-GmailSession</span>
+<div class="highlight highlight-powershell"><pre><span class="nb">New-GmailSession</span> <span class="p">[[</span><span class="n">-Credential</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">PSCredential</span><span class="p">&gt;]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
-<p>If you use <code>Invoke-GmailSession</code> and pass a block, the session will be passed into the block, 
-and will be logged out after it's executed. Use <code>$args</code> to access the session or parameterize the block: </p>
+<h4>
+<a name="parameters" class="anchor" href="#parameters"><span class="octicon octicon-link"></span></a>Parameters</h4>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nb">Invoke-GmailSession</span> <span class="n">-ScriptBlock</span> <span class="p">{</span>
-<span class="p">&gt;&gt;</span>      <span class="k">param</span><span class="p">(</span><span class="nv">$gmail</span><span class="p">)</span> <span class="c"># to use $gmail instead of $args</span>
-<span class="p">&gt;&gt;</span>      <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Label</span>
-<span class="p">&gt;&gt;</span>  <span class="p">}</span>
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+<th>Default</th>
+</tr></thead>
+<tbody><tr>
+<td><code>-Credential</code></td>
+<td>No</td>
+<td>
+<code>Get-StoredCredential Gmail.ps:default</code> or <code>Get-Credential</code>
+</td>
+</tr></tbody>
+</table><h4>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
+<p>Authenticating a Gmail session using the stored credential in the <code>Gmail.ps:default</code> entry. 
+If there is no credential stored a prompt for username and password will be displayed.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$gmail</span> <span class="p">=</span> <span class="nb">New-GmailSession</span>
+<span class="c"># play with your gmail...</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="remove-gmailsession" class="anchor" href="#remove-gmailsession"><span class="octicon octicon-link"></span></a>Remove-GmailSession</h3>
+
+<p>Closes the connection to Gmail and destroys the session.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Remove-GmailSession</span> <span class="p">[</span><span class="n">-Session</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
-<p>You can also check which accounts are logged in at any time using <code>Get-GmailSession</code> or close all of them with <code>Clear-GmailSession</code>.</p>
+<h4>
+<a name="parameters-1" class="anchor" href="#parameters-1"><span class="octicon octicon-link"></span></a>Parameters</h4>
+
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody><tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+</tr></tbody>
+</table><h4>
+<a name="examples-1" class="anchor" href="#examples-1"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
+<p>Closing an already opened connection to a Gmail account:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Remove-GmailSession</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="invoke-gmailsession" class="anchor" href="#invoke-gmailsession"><span class="octicon octicon-link"></span></a>Invoke-GmailSession</h3>
+
+<p>Creates a new Gmail session and passes it to a script block. Once the block is executed, the session is automatically closed.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Invoke-GmailSession</span> <span class="p">[[</span><span class="n">-Credential</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">PSCredential</span><span class="p">&gt;]</span> <span class="p">[</span><span class="n">-ScriptBlock</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">ScriptBlock</span><span class="p">&gt;</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
+</pre></div>
+
+<h4>
+<a name="parameters-2" class="anchor" href="#parameters-2"><span class="octicon octicon-link"></span></a>Parameters</h4>
+
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+<th>Default</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Credential</code></td>
+<td>No</td>
+<td>
+<code>Get-StoredCredential Gmail.ps:default</code> or <code>Get-Credential</code>
+</td>
+</tr>
+<tr>
+<td><code>-ScriptBlock</code></td>
+<td>No</td>
+<td></td>
+</tr>
+</tbody>
+</table><h4>
+<a name="examples-2" class="anchor" href="#examples-2"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
+<p>Creates a Gmail session, returns the number of messages in the Inbox and then closes the session.
+The automatically created session can be accessed inside the script block via the <code>$args</code> variable.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Invoke-GmailSession</span> <span class="n">-ScriptBlock</span> <span class="p">{</span>
+    <span class="nv">$args</span> <span class="p">|</span> <span class="n">Count-Message</span>
+<span class="p">}</span>
+</pre></div>
+</li>
+<li>
+<p>Creates a Gmail session, returns all the labels used in that account and then closes the session.
+The automatically created session can be accessed inside the script block via the <code>$gmail</code> variable.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Invoke-GmailSession</span> <span class="n">-ScriptBlock</span> <span class="p">{</span>
+    <span class="k">param</span><span class="p">(</span><span class="nv">$gmail</span><span class="p">)</span>
+    <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Label</span>
+<span class="p">}</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="get-gmailsession" class="anchor" href="#get-gmailsession"><span class="octicon octicon-link"></span></a>Get-GmailSession</h3>
+
+<p>Returns a list of all opened Gmail sessions.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Get-GmailSession</span>
+</pre></div>
 
 <h3>
-<a name="gathering-emails" class="anchor" href="#gathering-emails"><span class="octicon octicon-link"></span></a>Gathering emails</h3>
+<a name="clear-gmailsession" class="anchor" href="#clear-gmailsession"><span class="octicon octicon-link"></span></a>Clear-GmailSession</h3>
 
-<p>Get the messages in the inbox:</p>
+<p>Closes all opened Gmail sessions.</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">=</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span>
+<div class="highlight highlight-powershell"><pre><span class="nb">Clear-GmailSession</span>
 </pre></div>
 
+<h3>
+<a name="get-mailbox" class="anchor" href="#get-mailbox"><span class="octicon octicon-link"></span></a>Get-Mailbox</h3>
+
+<p>Returns the <code>Inbox</code> if no parameters are specified, an existing Label or one of the default 
+Gmail folders (<code>All Mail</code>, <code>Starred</code>, <code>Drafts</code>, <code>Important</code>, <code>Sent Mail</code>, <code>Spam</code>).</p>
+
+<blockquote>
+<p><strong>Alias:</strong> <code>Select-Mailbox</code></p>
+</blockquote>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Get-Mailbox</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="p">[[</span><span class="n">-Name</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
+
+<span class="nb">Get-Mailbox</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Label</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
+</pre></div>
+
+<h4>
+<a name="parameters-3" class="anchor" href="#parameters-3"><span class="octicon octicon-link"></span></a>Parameters</h4>
+
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+<th>Default (List of possible values)</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Name</code></td>
+<td>ByPropertyName</td>
+<td>
+<code>Inbox</code> (<code>All Mail</code>, <code>Starred</code>, <code>Drafts</code>, <code>Important</code>, <code>Sent Mail</code>, <code>Spam</code>)</td>
+</tr>
+<tr>
+<td><code>-Label</code></td>
+<td>ByPropertyName</td>
+<td></td>
+</tr>
+</tbody>
+</table><h4>
+<a name="examples-3" class="anchor" href="#examples-3"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
+<p>Get the unread messages in the inbox:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$inbox</span> <span class="p">=</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span>
+<span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span>
+</pre></div>
+</li>
+<li>
 <p>Get the messages marked as Important by Gmail:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span> <span class="s2">"Important"</span> <span class="p">|</span> <span class="nb">Get-Message</span>
+<div class="highlight highlight-powershell"><pre><span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span> <span class="s2">"Important"</span> <span class="p">|</span> <span class="nb">Get-Message</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="get-message" class="anchor" href="#get-message"><span class="octicon octicon-link"></span></a>Get-Message</h3>
+
+<p>Returns a (filtered) list of the messages inside a selected mailbox (see <a href="#get-mailbox"><code>Get-Mailbox</code></a>).
+The returned messages will have their body and attachments downloaded only if the <code>-Prefetch</code> parameter is specified. </p>
+
+<p>Every listed message has a set of flags indicating the message's status and properties.</p>
+
+<table>
+<thead><tr>
+<th>Flag</th>
+<th>Meaning</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>u</code></td>
+<td>Is unread</td>
+</tr>
+<tr>
+<td><code>f</code></td>
+<td>Is fetched</td>
+</tr>
+<tr>
+<td><code>i</code></td>
+<td>Is important</td>
+</tr>
+<tr>
+<td><code>s</code></td>
+<td>Is starred</td>
+</tr>
+<tr>
+<td><code>a</code></td>
+<td>Has attachment</td>
+</tr>
+</tbody>
+</table><p>Any flag may be unset. An unset flag is the equivalent of "is not" and is represented as a <code>-</code> character.
+<code>--i-a</code> means the message is not Unread, is not Fetched, is Important, is not Starred and has atleast one attachment.</p>
+
+<p>Supports automatic name completion for the existing labels.</p>
+
+<blockquote>
+<p><strong>Alias:</strong> <code>Filter-Message</code></p>
+</blockquote>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Get-Message</span> <span class="p">[</span><span class="n">-Session</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> 
+            <span class="p">[[</span><span class="n">-From</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> <span class="p">[[</span><span class="n">-To</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> 
+            <span class="p">[[</span><span class="n">-On</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">DateTime</span><span class="p">&gt;]</span> <span class="p">[[</span><span class="n">-After</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">DateTime</span><span class="p">&gt;]</span> <span class="p">[[</span><span class="n">-Before</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">DateTime</span><span class="p">&gt;]</span> 
+            <span class="p">[[</span><span class="n">-Cc</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> <span class="p">[[</span><span class="n">-Bcc</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> 
+            <span class="p">[[</span><span class="n">-Subject</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> <span class="p">[[</span><span class="n">-Text</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> <span class="p">[[</span><span class="n">-Body</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> 
+            <span class="p">[[</span><span class="n">-Label</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">[]&gt;]</span> <span class="p">[[</span><span class="n">-FileName</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> <span class="p">[[</span><span class="n">-Category</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> 
+            <span class="p">[</span><span class="n">-Unread</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Read</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Starred</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Unstarred</span> <span class="p">]</span> <span class="p">[</span><span class="n">-HasAttachment</span> <span class="p">]</span> 
+            <span class="p">[</span><span class="n">-Answered</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Draft</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Undraft</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Prefetch</span> <span class="p">]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
-<p>With <code>Get-Mailbox</code> you can access the <code>"All Mail"</code>, <code>"Starred"</code>, <code>"Drafts"</code>, <code>"Important"</code>, <code>"Sent Mail"</code> and <code>"Spam"</code> folders</p>
+<h4>
+<a name="parameters-4" class="anchor" href="#parameters-4"><span class="octicon octicon-link"></span></a>Parameters</h4>
 
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+<th>Default (List of possible values)</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-From</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-To</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-On</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-After</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Before</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Cc</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Bcc</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Subject</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Text</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Body</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Label</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-FileName</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Category</code></td>
+<td>No</td>
+<td>
+<em>none</em> (<code>Primary</code>, <code>Personal</code>, <code>Social</code>, <code>Promotions</code>, <code>Updates</code>, <code>Forums</code>)</td>
+</tr>
+<tr>
+<td><code>-Unread</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Read</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Starred</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Unstarred</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-HasAttachment</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Answered</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Draft</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Undraft</code></td>
+<td>No</td>
+<td></td>
+</tr>
+<tr>
+<td><code>-Prefetch</code></td>
+<td>No</td>
+<td></td>
+</tr>
+</tbody>
+</table><h4>
+<a name="examples-4" class="anchor" href="#examples-4"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
+<p>Get the unread messages in the inbox:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$inbox</span> <span class="p">=</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span>
+<span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span>
+</pre></div>
+</li>
+<li>
+<p>Get the messages marked as Important by Gmail:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span> <span class="s2">"Important"</span> <span class="p">|</span> <span class="nb">Get-Message</span>
+</pre></div>
+</li>
+<li>
 <p>Filter with some criteria:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-After</span> <span class="s2">"2011-06-01"</span> <span class="n">-Before</span> <span class="s2">"2012-01-01"</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-On</span> <span class="s2">"2011-06-01"</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-From</span> <span class="s2">"x@gmail.com"</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-To</span> <span class="s2">"y@gmail.com"</span>
+<div class="highlight highlight-powershell"><pre><span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-After</span> <span class="s2">"2011-06-01"</span> <span class="n">-Before</span> <span class="s2">"2012-01-01"</span>
+<span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-On</span> <span class="s2">"2011-06-01"</span>
+<span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-From</span> <span class="s2">"x@gmail.com"</span>
+<span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-To</span> <span class="s2">"y@gmail.com"</span>
 </pre></div>
-
+</li>
+<li>
 <p>Combine flags and options:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="n">-From</span> <span class="s2">"myboss@gmail.com"</span>
+<div class="highlight highlight-powershell"><pre><span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="n">-From</span> <span class="s2">"myboss@gmail.com"</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="update-message" class="anchor" href="#update-message"><span class="octicon octicon-link"></span></a>Update-Message</h3>
+
+<p>Archives, marks as spam, as read/undead and adds/removes a star from a given message.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Update-Message</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="n">-Message</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Read</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Star</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Archive</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Spam</span> <span class="p">]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
+
+<span class="nb">Update-Message</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="n">-Message</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Read</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Unstar</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Archive</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Spam</span> <span class="p">]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
+
+<span class="nb">Update-Message</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="n">-Message</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Unread</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Star</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Archive</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Spam</span> <span class="p">]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
+
+<span class="nb">Update-Message</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="n">-Message</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Unread</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Unstar</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Archive</span> <span class="p">]</span> <span class="p">[</span><span class="n">-Spam</span> <span class="p">]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
-<p>Browsing labeled emails is similar to working with the inbox.</p>
+<h4>
+<a name="parameters-5" class="anchor" href="#parameters-5"><span class="octicon octicon-link"></span></a>Parameters</h4>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span> <span class="n">-Label</span> <span class="s2">"Important"</span>
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+</tr>
+<tr>
+<td><code>-Message</code></td>
+<td>ByValue</td>
+</tr>
+<tr>
+<td><code>-Read</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-Unread</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-Archive</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-Star</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-Unstar</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-Spam</code></td>
+<td>No</td>
+</tr>
+</tbody>
+</table><h4>
+<a name="examples-5" class="anchor" href="#examples-5"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
+<p>Each message can be manipulated using block style. Remember that every message in a conversation/thread will come as a separate message.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$messages</span> <span class="p">=</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">-Last</span> <span class="n">10</span>
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$msg</span> <span class="k">in</span> <span class="nv">$messages</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Update-Message</span> <span class="n">-Read</span> <span class="c"># you can use -Unread, -Spam, -Star, -Unstar, -Archive too</span>
+<span class="p">}</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="receive-message" class="anchor" href="#receive-message"><span class="octicon octicon-link"></span></a>Receive-Message</h3>
+
+<p>Fetches the whole message from the server (including the body and the attachments).</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Receive-Message</span> <span class="p">[</span><span class="n">-Session</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Message</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
-<p>You can count the messages too:</p>
+<h4>
+<a name="parameters-6" class="anchor" href="#parameters-6"><span class="octicon octicon-link"></span></a>Parameters</h4>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Measure-Message</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="p">|</span> <span class="nb">Measure-Message</span>
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+</tr>
+<tr>
+<td><code>-Message</code></td>
+<td>ByValue</td>
+</tr>
+</tbody>
+</table><h4>
+<a name="examples-6" class="anchor" href="#examples-6"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
+<p>To read the actual body of a message you have to first fetch it from the Gmail servers:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$msg</span> <span class="p">=</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-From</span> <span class="s2">"x@gmail.com"</span> <span class="p">|</span> <span class="nb">Receive-Message</span>
+<span class="nv">$msg</span><span class="p">.</span><span class="n">Body</span> <span class="c"># returns the body of the message</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="move-message" class="anchor" href="#move-message"><span class="octicon octicon-link"></span></a>Move-Message</h3>
+
+<p>Moves a message to a different mailbox or label. </p>
+
+<p>Supports automatic name completion for the existing labels.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Move-Message</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="n">-Message</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Mailbox</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
+
+<span class="nb">Move-Message</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="n">-Message</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;</span> <span class="n">-Label</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
-<p>Also you can manipulate each message using block style. Remember that every message in a conversation/thread will come as a separate message.</p>
+<h4>
+<a name="parameters-7" class="anchor" href="#parameters-7"><span class="octicon octicon-link"></span></a>Parameters</h4>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$messages</span> <span class="p">=</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">-Last</span> <span class="n">10</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="k">foreach</span> <span class="p">(</span><span class="nv">$msg</span> <span class="k">in</span> <span class="nv">$messages</span><span class="p">)</span> <span class="p">{</span>
-<span class="p">&gt;&gt;</span>     <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Update-Message</span> <span class="n">-Read</span> <span class="c"># you can use -Unread, -Spam, -Star, -Unstar, -Archive too</span>
-<span class="p">&gt;&gt;</span> <span class="p">}</span>
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+</tr>
+<tr>
+<td><code>-Message</code></td>
+<td>ByValue</td>
+</tr>
+<tr>
+<td><code>-Mailbox</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-Label</code></td>
+<td>No</td>
+</tr>
+</tbody>
+</table><h4>
+<a name="examples-7" class="anchor" href="#examples-7"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
+<p>Move the message to the <code>All Mail</code> mailbox:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Move-Message</span> <span class="s2">"All Mail"</span>
+</pre></div>
+</li>
+<li>
+<p>Move the message to the <code>Test</code> label:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Move-Message</span> <span class="n">-Label</span> <span class="s2">"Test"</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="remove-message" class="anchor" href="#remove-message"><span class="octicon octicon-link"></span></a>Remove-Message</h3>
+
+<p>Sends a message to the Gmail's <code>Trash</code> folder.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Remove-Message</span> <span class="p">[</span><span class="n">-Session</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Message</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
-<h3>
-<a name="working-with-emails" class="anchor" href="#working-with-emails"><span class="octicon octicon-link"></span></a>Working with emails!</h3>
+<h4>
+<a name="parameters-8" class="anchor" href="#parameters-8"><span class="octicon octicon-link"></span></a>Parameters</h4>
 
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+</tr>
+<tr>
+<td><code>-Message</code></td>
+<td>ByValue</td>
+</tr>
+</tbody>
+</table><h4>
+<a name="examples-8" class="anchor" href="#examples-8"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
 <p>Delete all emails from X:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-From</span> <span class="s2">"x@gmail.com"</span> <span class="p">|</span> <span class="nb">Remove-Message</span>
+<div class="highlight highlight-powershell"><pre><span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-From</span> <span class="s2">"x@gmail.com"</span> <span class="p">|</span> <span class="nb">Remove-Message</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="measure-message" class="anchor" href="#measure-message"><span class="octicon octicon-link"></span></a>Measure-Message</h3>
+
+<p>Returns the number of messages in a mailbox (supports labels too).</p>
+
+<blockquote>
+<p><strong>Alias:</strong> <code>Count-Message</code></p>
+</blockquote>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Measure-Message</span> <span class="p">[</span><span class="n">-Session</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
+<h4>
+<a name="parameters-9" class="anchor" href="#parameters-9"><span class="octicon octicon-link"></span></a>Parameters</h4>
+
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody><tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+</tr></tbody>
+</table><h4>
+<a name="examples-9" class="anchor" href="#examples-9"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
+<p>Count the messages in the inbox:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Measure-Message</span>
+</pre></div>
+</li>
+<li>
+<p>Count the important messages:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span> <span class="s2">"Important"</span> <span class="p">|</span> <span class="nb">Measure-Message</span>
+</pre></div>
+</li>
+<li>
+<p>Note that <code>Measure-Message</code> will return the number of all messages in the selected mailbox, not the number of the returned messages (if any). To count the returned messages, use <code>Measure-Object</code>. For example if we have 2 unread and 98 read messages in the <code>Important</code> mailbox:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="c"># returns 100, the number of messages in `Important`</span>
+<span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span> <span class="s2">"Important"</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="p">|</span> <span class="nb">Measure-Message</span>
+
+<span class="c"># returns 2, the number of unread messages in `Important`</span>
+<span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span> <span class="s2">"Important"</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="p">|</span> <span class="nb">Measure-Object</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="get-conversation" class="anchor" href="#get-conversation"><span class="octicon octicon-link"></span></a>Get-Conversation</h3>
+
+<p>Returns a list of messages that are part of a conversation.</p>
+
+<blockquote>
+<p><strong>Alias:</strong> <code>Get-Thread</code></p>
+</blockquote>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Get-Conversation</span> <span class="p">[</span><span class="n">-Session</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Message</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Prefetch</span><span class="p">]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
+</pre></div>
+
+<h4>
+<a name="parameters-10" class="anchor" href="#parameters-10"><span class="octicon octicon-link"></span></a>Parameters</h4>
+
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+</tr>
+<tr>
+<td><code>-Message</code></td>
+<td>ByValue</td>
+</tr>
+<tr>
+<td><code>-Prefetch</code></td>
+<td>No</td>
+</tr>
+</tbody>
+</table><h4>
+<a name="examples-10" class="anchor" href="#examples-10"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
+<p>Search the Inbox based on the message returned by <a href="#get-message"><code>Get-Message</code></a>, 
+and return all messages that are part of that conversaton and are in the Inbox:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span> <span class="s2">"Inbox"</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-From</span> <span class="s2">"z@gmail.com"</span> <span class="p">|</span> <span class="nb">Get-Conversaion</span>
+</pre></div>
+</li>
+<li>
+<p>Search "All Mail" based on the message returned by <a href="#get-message"><code>Get-Message</code></a>, 
+and return all messages that are part of that conversaton:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span> <span class="s2">"All Mail"</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-From</span> <span class="s2">"z@gmail.com"</span> <span class="p">|</span> <span class="nb">Get-Conversaion</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="save-attachment" class="anchor" href="#save-attachment"><span class="octicon octicon-link"></span></a>Save-Attachment</h3>
+
+<p>Downloads the attachments of a message to a local folder.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="n">Save-Attachment</span> <span class="p">[</span><span class="n">-Message</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;]</span> <span class="p">[</span><span class="n">-Path</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">[]&gt;</span> <span class="p">[</span><span class="n">-PassThru</span> <span class="p">]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
+
+<span class="n">Save-Attachment</span> <span class="p">[</span><span class="n">-Message</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;]</span> <span class="n">-LiteralPath</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">[]&gt;</span> <span class="p">[</span><span class="n">-PassThru</span> <span class="p">]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
+</pre></div>
+
+<h4>
+<a name="parameters-11" class="anchor" href="#parameters-11"><span class="octicon octicon-link"></span></a>Parameters</h4>
+
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Message</code></td>
+<td>ByValue</td>
+</tr>
+<tr>
+<td><code>-Path</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-LiteralPath</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-PassThru</code></td>
+<td>No</td>
+</tr>
+</tbody>
+</table><h4>
+<a name="examples-11" class="anchor" href="#examples-11"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
 <p>Save all attachments in the "Important" label to a local folder. 
-Note that without the <code>-Prefetch</code> parameter, no attachments will be downloaded from the server:</p>
+Note that without the <code>-Prefetch</code> parameter, no attachments will be downloaded:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span> <span class="n">-Label</span> <span class="s2">"Important"</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Prefetch</span> <span class="p">|</span> <span class="n">Save-Attachment</span> <span class="nv">$folder</span>
+<div class="highlight highlight-powershell"><pre><span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Mailbox</span> <span class="n">-Label</span> <span class="s2">"Important"</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Prefetch</span> <span class="p">|</span> <span class="n">Save-Attachment</span> <span class="nv">$folder</span>
 </pre></div>
-
+</li>
+<li>
 <p>Save just the first attachment from the newest unread email:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$msg</span> <span class="p">=</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="n">-HasAttachment</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">-Last</span> <span class="n">1</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$fetchedMsg</span> <span class="p">=</span> <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Receive-Message</span> <span class="c"># or use -Prefetch on Get-Message above</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$fetchedMsg</span><span class="p">.</span><span class="n">Attachments</span><span class="p">[</span><span class="n">0</span><span class="p">].</span><span class="n">Save</span><span class="p">(</span><span class="nv">$location</span><span class="p">)</span>
+<div class="highlight highlight-powershell"><pre><span class="nv">$msg</span> <span class="p">=</span> <span class="nv">$inbox</span> <span class="p">|</span> <span class="nb">Get-Message</span> <span class="n">-Unread</span> <span class="n">-HasAttachment</span> <span class="p">|</span> <span class="nb">Select-Object</span> <span class="n">-Last</span> <span class="n">1</span>
+<span class="nv">$fetchedMsg</span> <span class="p">=</span> <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Receive-Message</span> <span class="c"># or use -Prefetch on Get-Message above</span>
+<span class="nv">$fetchedMsg</span><span class="p">.</span><span class="n">Attachments</span><span class="p">[</span><span class="n">0</span><span class="p">].</span><span class="n">Save</span><span class="p">(</span><span class="nv">$location</span><span class="p">)</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="get-label" class="anchor" href="#get-label"><span class="octicon octicon-link"></span></a>Get-Label</h3>
+
+<p>Returns the labels applied to a message or all labels that exist.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Get-Label</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Message</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;]</span> <span class="p">[[</span><span class="o">-Like</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;]</span> <span class="p">[</span><span class="n">-All</span> <span class="p">]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
+<h4>
+<a name="parameters-12" class="anchor" href="#parameters-12"><span class="octicon octicon-link"></span></a>Parameters</h4>
+
+<table>
+<thead><tr>
+<th>Name (Alias)</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+</tr>
+<tr>
+<td><code>-Message</code></td>
+<td>ByValue</td>
+</tr>
+<tr>
+<td>
+<code>-Like</code> (<code>-Name</code>)</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-All</code></td>
+<td>No</td>
+</tr>
+</tbody>
+</table><h4>
+<a name="examples-12" class="anchor" href="#examples-12"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
 <p>Get all labels applied to a message:</p>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Get-Label</span>
+<div class="highlight highlight-powershell"><pre><span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Get-Label</span>
+</pre></div>
+</li>
+<li>
+<p>Get a list of the defined labels:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Label</span>
+</pre></div>
+</li>
+<li>
+<p>Check if a label exists:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Label</span> <span class="n">-Name</span> <span class="s2">"SomeLabel"</span> <span class="c"># returns null if the label doesn't exist</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="new-label" class="anchor" href="#new-label"><span class="octicon octicon-link"></span></a>New-Label</h3>
+
+<p>Creates a new label.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">New-Label</span> <span class="p">[</span><span class="n">-Name</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">[]&gt;</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
-<p>Add a label to a message (or remove it):</p>
+<h4>
+<a name="parameters-13" class="anchor" href="#parameters-13"><span class="octicon octicon-link"></span></a>Parameters</h4>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Set-Label</span> <span class="s2">"Important"</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Remove-Label</span> <span class="s2">"Important"</span>
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Name</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+</tr>
+</tbody>
+</table><h3>
+<a name="set-label" class="anchor" href="#set-label"><span class="octicon octicon-link"></span></a>Set-Label</h3>
+
+<p>Applies a label to a message.</p>
+
+<p>Supports automatic name completion for the existing labels.</p>
+
+<blockquote>
+<p><strong>Alias:</strong> <code>Add-Label</code></p>
+</blockquote>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Set-Label</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="n">-Message</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Name</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">[]&gt;</span> <span class="p">[</span><span class="n">-Force</span> <span class="p">]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
-<p>You can apply multiple lables:</p>
+<h4>
+<a name="parameters-14" class="anchor" href="#parameters-14"><span class="octicon octicon-link"></span></a>Parameters</h4>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Set-Label</span> <span class="s2">"Important"</span><span class="p">,</span><span class="s2">"Banking"</span>
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+</tr>
+<tr>
+<td><code>-Message</code></td>
+<td>ByValue</td>
+</tr>
+<tr>
+<td><code>-Name</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-Force</code></td>
+<td>No</td>
+</tr>
+</tbody>
+</table><h4>
+<a name="examples-13" class="anchor" href="#examples-13"><span class="octicon octicon-link"></span></a>Examples</h4>
+
+<ol>
+<li>
+<p>Apply a single or multiple labels:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Set-Label</span> <span class="s2">"Important"</span>
+<span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Set-Label</span> <span class="s2">"Important"</span><span class="p">,</span><span class="s2">"Banking"</span>
+</pre></div>
+</li>
+<li>
+<p>The example above will raise error if one of the specified labels doesn't exist. To avoid that, label creation can be forced:</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Set-Label</span> <span class="s2">"Important"</span><span class="p">,</span><span class="s2">"Banking"</span> <span class="n">-Force</span>
+</pre></div>
+</li>
+</ol><h3>
+<a name="remove-label" class="anchor" href="#remove-label"><span class="octicon octicon-link"></span></a>Remove-Label</h3>
+
+<p>Removes a label from a message or deletes the label from the account.</p>
+
+<p>Supports automatic name completion for the existing labels.</p>
+
+<div class="highlight highlight-powershell"><pre><span class="nb">Remove-Label</span> <span class="p">[</span><span class="n">-Name</span><span class="p">]</span> <span class="p">&lt;</span><span class="n">String</span><span class="p">[]&gt;</span> <span class="n">-Session</span> <span class="p">&lt;</span><span class="n">ImapClient</span><span class="p">&gt;</span> <span class="p">[</span><span class="n">-Message</span> <span class="p">&lt;</span><span class="n">MailMessage</span><span class="p">&gt;]</span> <span class="p">[&lt;</span><span class="n">CommonParameters</span><span class="p">&gt;]</span>
 </pre></div>
 
-<p>The example above will raise error when you don't have one of the specified labels. You can avoid this using:</p>
+<h4>
+<a name="parameters-15" class="anchor" href="#parameters-15"><span class="octicon octicon-link"></span></a>Parameters</h4>
 
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Set-Label</span> <span class="s2">"Important"</span><span class="p">,</span><span class="s2">"Banking"</span> <span class="n">-Force</span> <span class="c"># If one of the labels does't exist, it will be automatically created now</span>
-</pre></div>
-
-<p>You can also move message to a label/mailbox:</p>
-
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Move-Message</span> <span class="n">-Label</span> <span class="s2">"Test"</span>
-<span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$msg</span> <span class="p">|</span> <span class="nb">Move-Message</span> <span class="s2">"All Mail"</span>
-</pre></div>
-
-<h3>
-<a name="managing-labels" class="anchor" href="#managing-labels"><span class="octicon octicon-link"></span></a>Managing labels</h3>
-
-<p>With the Gmail module you can also manage your labels. You can get list of defined labels:</p>
-
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Label</span>
-</pre></div>
-
-<p>Create new label:</p>
-
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">New-Label</span> <span class="n">-Name</span> <span class="s2">"MyLabel"</span>
-</pre></div>
-
-<p>Remove labels:</p>
-
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Remove-Label</span> <span class="n">-Name</span> <span class="s2">"MyLabel"</span>
-</pre></div>
-
-<p>Or check if given label exists:</p>
-
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Get-Label</span> <span class="n">-Name</span> <span class="s2">"SomeLabel"</span> <span class="c"># returns null if the label doesn't exist</span>
-</pre></div>
-
-<p>Cmdlets that can take a label name as a parameter value (<code>Get-Message</code>, <code>Move-Message</code>, <code>Set-Label</code> and <code>Remove-Label</code>) support automatic completion:</p>
-
-<div class="highlight highlight-powershell"><pre><span class="n">PS</span><span class="p">&gt;</span> <span class="nv">$gmail</span> <span class="p">|</span> <span class="nb">Remove-Label</span> <span class="p">&lt;</span><span class="n">tab</span><span class="p">&gt;</span> <span class="c"># use &lt;tab&gt; key to cycle through all existing labels</span>
-</pre></div>
-
-<h2>
+<table>
+<thead><tr>
+<th>Name</th>
+<th>Pipeline input</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>-Name</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>-Session</code></td>
+<td>ByValue, ByPropertyName</td>
+</tr>
+<tr>
+<td><code>-Message</code></td>
+<td>ByValue</td>
+</tr>
+</tbody>
+</table><h2>
 <a name="roadmap" class="anchor" href="#roadmap"><span class="octicon octicon-link"></span></a>Roadmap</h2>
 
 <ul>
 <li>Write tests</li>
 <li>Send mail via Google's SMTP servers</li>
 <li>Backup/restore all messages and labels</li>
+</ul><h2>
+<a name="history" class="anchor" href="#history"><span class="octicon octicon-link"></span></a>History</h2>
+
+<p>Check <a href="https://github.com/nikoblag/Gmail.ps/releases">Release</a> list.</p>
+
+<h2>
+<a name="author" class="anchor" href="#author"><span class="octicon octicon-link"></span></a>Author</h2>
+
+<ul>
+<li>Nikolay Blagoev [<a href="https://github.com/nikoblag">https://github.com/nikoblag</a>]</li>
+</ul><h2>
+<a name="third-party-libraries" class="anchor" href="#third-party-libraries"><span class="octicon octicon-link"></span></a>Third Party Libraries</h2>
+
+<ul>
+<li>
+<a href="https://github.com/andyedinborough/aenetmail">AE.Net.Mail</a> library - Copyright (c) 2013 <a href="https://github.com/andyedinborough">Andy Edinborough</a>
+</li>
+<li>
+<a href="https://gist.github.com/toburger/2947424">Get-StoredCredential</a> cmdlet - Copyright (c) 2012 <a href="https://github.com/toburger">Tobias Burger</a>
+</li>
 </ul><h2>
 <a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
 
@@ -242,18 +1104,9 @@ Note that without the <code>-Prefetch</code> parameter, no attachments will be d
 </li>
 <li>Enjoy an ice cream and wait</li>
 </ol><h2>
-<a name="author" class="anchor" href="#author"><span class="octicon octicon-link"></span></a>Author</h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
 
-<ul>
-<li>Nikolay Blagoev [<a href="https://github.com/nikoblag">https://github.com/nikoblag</a>]</li>
-</ul><h2>
-<a name="copyright" class="anchor" href="#copyright"><span class="octicon octicon-link"></span></a>Copyright</h2>
-
-<ul>
-<li>Copyright (c) 2013 Nikolay Blagoev</li>
-<li>Copyright (c) 2013 Andy Edinborough - AE.Net.Mail library</li>
-<li>Copyright (c) 2012 Tobias Burger - Get-StoredCredential cmdlet</li>
-</ul><p>See LICENSE for details.</p>
+<p><a href="https://github.com/nikoblag/Gmail.ps/blob/master/LICENSE">MIT License</a></p>
       </section>
 
     </div>
