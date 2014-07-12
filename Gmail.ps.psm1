@@ -502,20 +502,12 @@ function Update-Message {
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AE.Net.Mail.MailMessage]$Message,
 
-        [Parameter(ParameterSetName = "Seen_Unflagged")]
-        [Parameter(ParameterSetName = "Seen_Flagged")]
         [switch]$Read,
 
-        [Parameter(ParameterSetName = "Unseen_Unflagged")]
-        [Parameter(ParameterSetName = "Unseen_Flagged")]
         [switch]$Unread,
 
-        [Parameter(ParameterSetName = "Unseen_Flagged")]
-        [Parameter(ParameterSetName = "Seen_Flagged")]
         [switch]$Star,
 
-        [Parameter(ParameterSetName = "Unseen_Unflagged")]
-        [Parameter(ParameterSetName = "Seen_Unflagged")]
         [switch]$Unstar,
 
         [switch]$Archive,
@@ -524,6 +516,15 @@ function Update-Message {
     )
     
     process {
+
+        if ($Read -and $Unread) {
+            Write-Error "The -Read and -Unread parameters cannot be used together."
+        }
+
+        if ($Star -and $Unstar) {
+            Write-Error "The -Star and -Unstar parameters cannot be used together."
+        }
+
         if ($Archive) {
             $Session.MoveMessage($Message.Uid, "[Gmail]/All Mail")
         }
