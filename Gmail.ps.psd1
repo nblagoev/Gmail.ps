@@ -12,7 +12,7 @@
 RootModule = 'Gmail.ps.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.5.0'
+ModuleVersion = '0.5.1'
 
 # ID used to uniquely identify this module
 GUID = '2ec25beb-5e1c-421d-b465-253aff0ecdb0'
