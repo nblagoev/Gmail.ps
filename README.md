@@ -1,10 +1,12 @@
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
 # Gmail for PowerShell
 
-A PowerShell module for managing your Gmail, with all the tools you'll need. Search, 
-read and send emails, archive, mark as read/unread, delete emails, 
+A PowerShell module for managing your Gmail, with all the tools you'll need. Search,
+read and send emails, archive, mark as read/unread, delete emails,
 and manage labels.
 
-**This module is still under development.**
+**This module is no longer maintained.**
 
 ## Table of contents
 
@@ -80,8 +82,8 @@ Or install it manually:
 
 ### New-GmailSession
 
-Opens a connection to a Gmail account using the specified credentials and creates a new session. If a generic credential is 
-created using the Windows Credential Manager (address: `Gmail.ps:default`), a session is automatically created using the 
+Opens a connection to a Gmail account using the specified credentials and creates a new session. If a generic credential is
+created using the Windows Credential Manager (address: `Gmail.ps:default`), a session is automatically created using the
 stored credentials each time the cmdlet is executed without a `-Credential` parameter.
 
 ```powershell
@@ -96,7 +98,7 @@ Name          | Pipeline input | Default
 
 #### Examples
 
-1. Authenticating a Gmail session using the stored credential in the `Gmail.ps:default` entry. 
+1. Authenticating a Gmail session using the stored credential in the `Gmail.ps:default` entry.
    If there is no credential stored a prompt for username and password will be displayed.
 
     ```powershell
@@ -180,7 +182,7 @@ Clear-GmailSession
 
 ### Get-Mailbox
 
-Returns the `Inbox` if no parameters are specified, an existing Label or one of the default 
+Returns the `Inbox` if no parameters are specified, an existing Label or one of the default
 Gmail folders (`All Mail`, `Starred`, `Drafts`, `Important`, `Sent Mail`, `Spam`).
 
 > **Alias:** `Select-Mailbox`
@@ -217,7 +219,7 @@ Name       | Pipeline input          | Default (List of possible values)
 ### Get-Message
 
 Returns a (filtered) list of the messages inside a selected mailbox (see [`Get-Mailbox`](#get-mailbox)).
-The returned messages will have their body and attachments downloaded only if the `-Prefetch` parameter is specified. 
+The returned messages will have their body and attachments downloaded only if the `-Prefetch` parameter is specified.
 
 Every listed message has a set of flags indicating the message's status and properties.
 
@@ -237,13 +239,13 @@ Supports automatic name completion for the existing labels.
 > **Alias:** `Filter-Message`
 
 ```powershell
-Get-Message [-Session] <ImapClient> 
-			[[-From] <String>] [[-To] <String>] 
-			[[-On] <DateTime>] [[-After] <DateTime>] [[-Before] <DateTime>] 
-			[[-Cc] <String>] [[-Bcc] <String>] 
-			[[-Subject] <String>] [[-Text] <String>] [[-Body] <String>] 
-			[[-Label] <String[]>] [[-FileName] <String>] [[-Category] <String>] 
-			[-Unread ] [-Read ] [-Starred ] [-Unstarred ] [-HasAttachment ] 
+Get-Message [-Session] <ImapClient>
+			[[-From] <String>] [[-To] <String>]
+			[[-On] <DateTime>] [[-After] <DateTime>] [[-Before] <DateTime>]
+			[[-Cc] <String>] [[-Bcc] <String>]
+			[[-Subject] <String>] [[-Text] <String>] [[-Body] <String>]
+			[[-Label] <String[]>] [[-FileName] <String>] [[-Category] <String>]
+			[-Unread ] [-Read ] [-Starred ] [-Unstarred ] [-HasAttachment ]
 			[-Answered ] [-Draft ] [-Undraft ] [-Prefetch ] [<CommonParameters>]
 ```
 
@@ -252,7 +254,7 @@ Get-Message [-Session] <ImapClient>
 Name             | Pipeline input          | Default (List of possible values)
 ---              | ---                     | ---
 `-Session`       | ByValue, ByPropertyName |
-`-From`          | No                      | 
+`-From`          | No                      |
 `-To`            | No                      |
 `-On`            | No                      |
 `-After`         | No                      |
@@ -369,7 +371,7 @@ Name       | Pipeline input
 
 ### Move-Message
 
-Moves a message to a different mailbox or label. 
+Moves a message to a different mailbox or label.
 
 Supports automatic name completion for the existing labels.
 
@@ -485,14 +487,14 @@ Name        | Pipeline input
 
 #### Examples
 
-1. Search the Inbox based on the message returned by [`Get-Message`](#get-message), 
+1. Search the Inbox based on the message returned by [`Get-Message`](#get-message),
    and return all messages that are part of that conversaton and are in the Inbox:
 
     ```powershell
 	$gmail | Get-Mailbox "Inbox" | Get-Message -From "z@gmail.com" | Get-Conversaion
     ```
 
-2. Search "All Mail" based on the message returned by [`Get-Message`](#get-message), 
+2. Search "All Mail" based on the message returned by [`Get-Message`](#get-message),
    and return all messages that are part of that conversaton:
 
     ```powershell
@@ -520,7 +522,7 @@ Name           | Pipeline input
 
 #### Examples
 
-1. Save all attachments in the "Important" label to a local folder. 
+1. Save all attachments in the "Important" label to a local folder.
    Note that without the `-Prefetch` parameter, no attachments will be downloaded:
 
     ```powershell
